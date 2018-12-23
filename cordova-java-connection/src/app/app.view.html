@@ -1,0 +1,21 @@
+<md-toolbar layout-align="center center">
+    <div layout-align="center center"
+         class="md-toolbar-tools">Prueba</div>
+</md-toolbar>
+
+<md-content layout="column"
+            flex>
+    <div layout="column"
+         layout-margin>
+        <md-input-container>
+            <label>Nombre</label>
+            <input ng-model="$ctrl.name">
+        </md-input-container>
+        <div layout="row"
+             layout-align="space-between center">
+            <md-button class="md-raised"
+                       ng-click="$ctrl.sayHello()">Saludar</md-button>
+        </div>
+    </div>
+
+</md-content>

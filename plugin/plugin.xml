@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-java-connection" version="0.2.3">
+    <name>Cordova Plugin Java Connection</name>
+    <description>Cordova Plugin Java Connection</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,device</keywords>
+
+    <hook type="after_plugin_install" src="hooks/after_plugin_add.js" />
+    <hook type="after_platform_add" src="hooks/after_plugin_add.js" />
+    <hook type="before_plugin_uninstall" src="hooks/before_plugin_rm.js" />
+
+    <platform name="android">
+        <js-module src="www/Cordova-plugin-java-connection.js" name="CordovaPluginJavaConnection">
+        <clobbers target="CordovaPluginJavaConnection" />
+    </js-module>
+
+       <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="CordovaPluginJavaConnection">
+                <param name="android-package" value="com.prueba.conex.CordovaPluginJavaConnection"/>
+            </feature>
+        </config-file>
+   <source-file src="src/android/CordovaPluginJavaConnection.java" target-dir="src/com/prueba/conex" />
+    </platform>
+</plugin>

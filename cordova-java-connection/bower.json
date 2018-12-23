@@ -1,0 +1,50 @@
+{
+  "name": "cordova-angular-material-typescript-seed",
+  "description": "Cordova, Angular Material - Typescript seed",
+  "main": "index.js",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/digitalizarte/cordova-angular-material-typescript-seed",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.4",
+    "angular-material": "^1.1.4",
+    "angular-moment": "^1.0.1",
+    "angular-material-icons": "^0.7.1",
+    "angular-ui-router": "^1.0.3",
+    "systemjs": "*",
+    "angular-ts-decorators": "apolloteam/angular-ts-decorators#^0.0.17",
+    "reflect-metadata": "^0.1.10",
+    "tslib": "^1.7.1",
+    "plugin-css": "systemjs/plugin-css#^0.1.33",
+    "material-design-icons": "^3.0.1"
+  },
+  "install": {
+    "path": "www/vendor",
+    "sources": {
+      "angular-ts-decorators": [
+        "node_modules/angular-ts-decorators/angular-ts-decorators.js"
+      ],
+      "systemjs": [
+        "node_modules/systemjs/dist/system.js"
+      ],
+      "plugin-css": [
+        "bower_components/plugin-css/css.js"
+      ],
+      "material-design-icons": [
+        "bower_components/material-design-icons/iconfont/material-icons.css",
+        "bower_components/material-design-icons/iconfont/MaterialIcons-Regular.eot",
+        "bower_components/material-design-icons/iconfont/MaterialIcons-Regular.svg",
+        "bower_components/material-design-icons/iconfont/MaterialIcons-Regular.ttf",
+        "bower_components/material-design-icons/iconfont/MaterialIcons-Regular.woff",
+        "bower_components/material-design-icons/iconfont/MaterialIcons-Regular.woff2"
+      ]
+    }
+  }
+}

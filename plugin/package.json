@@ -1,0 +1,25 @@
+{
+  "_id": "cordova-plugin-java-connection",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/cordova-plugin-java-connection",
+  "_phantomChildren": {},
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "author": {
+    "name": "coucoume"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Cordova-plugin-java-connection",
+  "license": "ISC",
+  "main": "Cordova-plugin-java-connection.js",
+  "name": "cordova-plugin-java-connection",
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.6.19"
+}

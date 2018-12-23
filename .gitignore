@@ -1,0 +1,7 @@
+cordova-java-connection/.vscode/
+cordova-java-connection/node_modules/
+cordova-java-connection/*.log
+cordova-java-connection/www/
+cordova-java-connection/bower_components/
+cordova-java-connection/platforms/
+cordova-java-connection/*/plugins/

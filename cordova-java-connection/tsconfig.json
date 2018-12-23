@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "module": "system",
+        "moduleResolution": "node",
+        "noEmitHelpers": true,
+        "noEmitOnError": true,
+        "noImplicitAny": false,
+        "target": "es5",
+        "traceResolution": true,
+        "pretty": true,
+        "types": ["angular", "angular-animate", "angular-material", "cordova", "es6-promise", "jquery", "systemjs"]
+    },
+    "exclude": [
+        "bower_components",
+        "node_modules",
+        "platforms",
+        "www"
+    ],
+    "compileOnSave": true
+}
