@@ -4,6 +4,8 @@ ECHO Instalando bower general.
 CALL npm i -g cordova
 CALL npm i -g gulp
 CALL npm i -g bower
+CALL npm i -g bower-installer
+CALL npm i -g http-server
 ECHO Descargando dependencias npm
 CALL npm i
 ECHO Descargando dependencias bower
