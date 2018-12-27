@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 @Component({
     selector: 'app',
     templateUrl: 'app/app.view.html',
-    styleUrls:'app/app.css'
+    styleUrls: 'app/app.css'
 })
 export class AppComponent {
     public static $inject: string[] = [
@@ -14,7 +14,7 @@ export class AppComponent {
         '$mdToast',
         AppService.name
     ];
-    
+
     /**
      * Toggle para renderizar el listado de logs.
      */
@@ -34,16 +34,22 @@ export class AppComponent {
         const methodName: string = `${AppComponent.name}::startService`;
         this.$log.debug(`${methodName}`);
 
+        // Invoca el metodo del servicio angular para conectar con el plugin.
         this.appService.startService()
             .then(() => {
+                // Success.
                 this.$log.debug(`${methodName} (then)`);
-                const msg = 'Se inicio el servicio.';
+
+                // Muestra el toast.
+                const msg = 'Started';
                 this.showToast(msg);
 
                 this.appService.getLogs();
             })
             .catch(() => {
+                // Error.
                 this.$log.debug(`${methodName} (catch)`);
+
                 const msg = 'Ha ocurrido un error.';
                 this.showToast(msg);
             })

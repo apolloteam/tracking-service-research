@@ -3,6 +3,11 @@
 import angular from 'angular';
 import { Injectable } from 'angular-ts-decorators';
 
+/**
+ * Servicio Angular que se conecta con el plugin.
+ * @export
+ * @class AppService
+ */
 @Injectable()
 export class AppService {
 
@@ -54,10 +59,12 @@ export class AppService {
         if (this.isAvailable()) {
             this.$window.CordovaPluginJavaConnection.startService(
                 () => {
+                    // Success.
                     this.$log.debug(`${methodName} (success)`);
                     deferred.resolve();
                 },
                 (reason) => {
+                    // Fail.
                     this.$log.debug(`${methodName} (error) reason %o`, reason);
                     deferred.reject(reason);
                 });
@@ -81,10 +88,12 @@ export class AppService {
         if (this.isAvailable()) {
             this.$window.CordovaPluginJavaConnection.stopService(
                 () => {
+                    // Success.
                     this.$log.debug(`${methodName} (success)`);
                     deferred.resolve();
                 },
                 (reason) => {
+                    // Fail.
                     this.$log.debug(`${methodName} (error) reason %o`, reason);
                     deferred.reject(reason);
                 });

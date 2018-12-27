@@ -1,5 +1,7 @@
 var exec = require('cordova/exec');
 
+// Metodos que se exponen a nivel de Javascript para su conexion con java. 
+
 exports.sayHello = function (arg0, success, error) {
   exec(success, error, 'CordovaPluginJavaConnection', 'sayHello', [arg0]);
 };
