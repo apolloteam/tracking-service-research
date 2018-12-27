@@ -44,12 +44,10 @@ export class AppComponent {
                 const msg = 'Started';
                 this.showToast(msg);
             })
-            .catch(() => {
+            .catch((err) => {
                 // Error.
                 this.$log.debug(`${methodName} (catch)`);
-
-                const msg = 'Ha ocurrido un error.';
-                this.showToast(msg);
+                this.showToast(err);
             })
     }
 
@@ -62,14 +60,15 @@ export class AppComponent {
 
         this.appService.stopService()
             .then(() => {
+                // Success.
                 this.$log.debug(`${methodName} (then)`);
                 const msg = 'Logs were removed.';
                 this.showToast(msg);
             })
-            .catch(() => {
+            .catch((err) => {
+                // Error.
                 this.$log.debug(`${methodName} (catch)`);
-                const msg = 'Ha ocurrido un error.';
-                this.showToast(msg);
+                this.showToast(err);
             })
     }
 
