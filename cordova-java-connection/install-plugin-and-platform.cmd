@@ -34,7 +34,7 @@ IF [%Errorlevel%] EQU [0] (
 
 CALL cordova platform rm android --save
 CALL cordova plugin add .\..\plugin --save
-CALL npm i cordova-android@6.4.0 apolloteam/angular-ts-decorators --save
+CALL npm i cordova-android apolloteam/angular-ts-decorators --save
 CALL gulp
 CALL cordova platform add android --save
 CALL cordova build android

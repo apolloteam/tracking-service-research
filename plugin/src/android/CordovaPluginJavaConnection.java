@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PermissionHelper;
@@ -23,6 +24,9 @@ import org.json.JSONObject;
 public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     private static CallbackContext sayHelloContext = null;
+    private static CallbackContext startServiceContext = null;
+    private static CallbackContext stopServiceContext = null;
+    private static CallbackContext getLogsContext = null;
 
     /**
      * Plugin initialization
@@ -37,6 +41,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     @Override
     public void onReset() {
         CordovaPluginJavaConnection.sayHelloContext = null;
+        CordovaPluginJavaConnection.startServiceContext = null;
+        CordovaPluginJavaConnection.stopServiceContext = null;
+        CordovaPluginJavaConnection.getLogsContext = null;
     }
 
     /**
@@ -53,6 +60,18 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         try {
             if (action.equals("sayHello")) {
                 sayHello(args, callbackContext);
+                ret = true;
+            }
+            if (action.equals("startService")) {
+                startService(callbackContext);
+                ret = true;
+            }
+            if (action.equals("stopService")) {
+                stopService(callbackContext);
+                ret = true;
+            }
+            if (action.equals("getLogs")) {
+                getLogs(callbackContext);
                 ret = true;
             }
         } catch (Exception ex) {
@@ -83,10 +102,51 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
             callbackContext.sendPluginResult(r);
         }
     }
+    /**
+     * Notifica a la app que se completo correctamente la acción sayHello en el servicio.
+     */
+    public static void startServiceComplete() {
+        final CallbackContext callbackContext = CordovaPluginJavaConnection.startServiceContext;
+        if (callbackContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.OK, Boolean.TRUE);
+            callbackContext.sendPluginResult(r);
+        }
+    }
+    
+    /**
+     * Notifica a la app que ocurrio un error.
+     */
+    public static void startServiceFail(String message) {
+        final CallbackContext callbackContext = CordovaPluginJavaConnection.startServiceContext;
+        if (callbackContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.ERROR, message);
+            callbackContext.sendPluginResult(r);
+        }
+    }
+    /**
+     * Notifica a la app que se completo correctamente la acción sayHello en el servicio.
+     */
+    public static void stopServiceComplete() {
+        final CallbackContext callbackContext = CordovaPluginJavaConnection.stopServiceContext;
+        if (callbackContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.OK, Boolean.TRUE);
+            callbackContext.sendPluginResult(r);
+        }
+    }
+    
+    /**
+     * Notifica a la app que ocurrio un error.
+     */
+    public static void stopServiceFail(String message) {
+        final CallbackContext callbackContext = CordovaPluginJavaConnection.stopServiceContext;
+        if (callbackContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.ERROR, message);
+            callbackContext.sendPluginResult(r);
+        }
+    }
 
     /**
      * Say Hello.
-     *
      * @param args
      * @param callbackContext
      */
@@ -111,19 +171,137 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
             }
         });
     }
+    
+    /**
+     * startService.
+     * @param callbackContext
+     */
+    private void startService(final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+
+                    String msg = "Started";
+                    startServiceContext(callbackContext, msg);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    if (callbackContext != null) {
+                        callbackContext.error(ex.getMessage());
+                    }
+
+                    startServiceContext(null,"");
+                }
+            }
+        });
+    }
+
+    /**
+     * stopService.
+     * @param callbackContext
+     */
+    private void stopService(final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+
+                    String msg = "Stoped";
+                    stopServiceContext(callbackContext,msg);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    if (callbackContext != null) {
+                        callbackContext.error(ex.getMessage());
+                    }
+
+                    stopServiceContext(null,"");
+                }
+            }
+        });
+    }
 
     /**
      * Guarda la referencia del contexto de la app web para enviar la respuesta a la llamada.
-     * @param callbackContext COntexto de la app web.
+     * @param callbackContext Contexto de la app web.
+     */
+    private void getLogs(final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+
+                    String[] payload;
+                    payload = new String[]{"log 1","log 2","log 3"};
+                    String json = new Gson().toJson(payload);
+                    getLogsContext(callbackContext, json);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    if (callbackContext != null) {
+                        callbackContext.error(ex.getMessage());
+                    }
+
+                    getLogsContext(null,null);
+                }
+            }
+        });
+    }
+
+    /**
+     * Guarda la referencia del contexto de la app web para enviar la respuesta a la llamada.
+     * @param callbackContext Contexto de la app web.
      */
     private void sayHelloContext(CallbackContext callbackContext, String msg) {
-        // Log.d(TAG, "sayHelloContext TH: " + Thread.currentThread().getName() + " PC: " + this.getCurrentProcessName());
         CordovaPluginJavaConnection.sayHelloContext = callbackContext;
 
         if (CordovaPluginJavaConnection.sayHelloContext != null) {
             PluginResult r = new PluginResult(PluginResult.Status.OK, msg);
             r.setKeepCallback(true);
             CordovaPluginJavaConnection.sayHelloContext.sendPluginResult(r);
+        }
+    }
+
+    /**
+     * Guarda la referencia del contexto de la app web para enviar la respuesta a la llamada.
+     * @param callbackContext Contexto de la app web.
+     */
+    private void startServiceContext(CallbackContext callbackContext, String msg) {
+        CordovaPluginJavaConnection.startServiceContext = callbackContext;
+
+        if (CordovaPluginJavaConnection.startServiceContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.OK, msg);
+            r.setKeepCallback(true);
+            CordovaPluginJavaConnection.startServiceContext.sendPluginResult(r);
+        }
+    }
+
+    /**
+     * Guarda la referencia del contexto de la app web para enviar la respuesta a la llamada.
+     * @param callbackContext Contexto de la app web.
+     */
+    private void stopServiceContext(CallbackContext callbackContext, String msg) {
+        CordovaPluginJavaConnection.stopServiceContext = callbackContext;
+
+        if (CordovaPluginJavaConnection.stopServiceContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.OK, msg);
+            r.setKeepCallback(true);
+            CordovaPluginJavaConnection.stopServiceContext.sendPluginResult(r);
+        }
+    }
+
+    /**
+     * Guarda la referencia del contexto de la app web para enviar la respuesta a la llamada.
+     * @param callbackContext Contexto de la app web.
+     */
+    private void getLogsContext(CallbackContext callbackContext, String payload) {
+        CordovaPluginJavaConnection.getLogsContext = callbackContext;
+
+        if (CordovaPluginJavaConnection.getLogsContext != null) {
+            PluginResult r = new PluginResult(PluginResult.Status.OK, payload);
+            r.setKeepCallback(true);
+            CordovaPluginJavaConnection.getLogsContext.sendPluginResult(r);
         }
     }
     

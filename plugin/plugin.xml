@@ -11,6 +11,7 @@
     <hook type="before_plugin_uninstall" src="hooks/before_plugin_rm.js" />
 
     <platform name="android">
+    <framework src="com.google.code.gson:gson:2.8.4" />
         <js-module src="www/Cordova-plugin-java-connection.js" name="CordovaPluginJavaConnection">
         <clobbers target="CordovaPluginJavaConnection" />
     </js-module>

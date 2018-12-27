@@ -1,33 +1,93 @@
 import angular from 'angular';
 import 'angular-material';
 import { Component } from 'angular-ts-decorators';
+import { AppService } from './app.service';
 
 @Component({
     selector: 'app',
     templateUrl: 'app/app.view.html',
+    styleUrls:'app/app.css'
 })
 export class AppComponent {
     public static $inject: string[] = [
-        '$log'
+        '$log',
+        '$mdToast',
+        AppService.name
     ];
-
-    public name: string = '';
+    
+    /**
+     * Toggle para renderizar el listado de logs.
+     */
+    public showLogToggle: boolean = false;
 
     constructor(
-        private $log: angular.ILogService) {
+        private $log: angular.ILogService,
+        private $mdToast: angular.material.IToastService,
+        private appService: AppService) {
         this.$log.debug(`${AppComponent.name}::ctor`);
     }
-    
-    public sayHello() {
-        this.$log.debug(`${AppComponent.name}::sayHello`);
-        const w: any = window;
-        w.CordovaPluginJavaConnection.sayHello(this.name,
-            (resp) => {
-                this.$log.debug(`${AppComponent.name}::sayHello (Success) %o`, resp);
-                alert(`Respuesta: ${resp}`)
-            },
-            () => {
-                this.$log.debug(`${AppComponent.name}::sayHello (Error)`);
+
+    /**
+     * Inicia el servicio del plugin.
+     */
+    public startService() {
+        const methodName: string = `${AppComponent.name}::startService`;
+        this.$log.debug(`${methodName}`);
+
+        this.appService.startService()
+            .then(() => {
+                this.$log.debug(`${methodName} (then)`);
+                const msg = 'Se inicio el servicio.';
+                this.showToast(msg);
+
+                this.appService.getLogs();
             })
+            .catch(() => {
+                this.$log.debug(`${methodName} (catch)`);
+                const msg = 'Ha ocurrido un error.';
+                this.showToast(msg);
+            })
+    }
+
+    /**
+     * Detiene el servicio del plugin.
+     */
+    public stopService() {
+        const methodName: string = `${AppComponent.name}::stopService`;
+        this.$log.debug(`${methodName}`);
+
+        this.appService.stopService()
+            .then(() => {
+                this.$log.debug(`${methodName} (then)`);
+                const msg = 'Se detuvo el servicio.';
+                this.showToast(msg);
+            })
+            .catch(() => {
+                this.$log.debug(`${methodName} (catch)`);
+                const msg = 'Ha ocurrido un error.';
+                this.showToast(msg);
+            })
+    }
+
+    /**
+     * Muestra/Oculta el listado de logs.
+     */
+    public showLog() {
+        const methodName: string = `${AppComponent.name}::showLog`;
+        this.$log.debug(`${methodName}`);
+
+        this.showLogToggle = !this.showLogToggle;
+    }
+
+    /**
+     * Muestra el toast con el mensaje correspondiente.
+     */
+    private showToast(msg: string) {
+        const toastConfig: angular.material.ISimpleToastPreset = this.$mdToast.simple()
+            .hideDelay(2000)
+            .position('bottom')
+            .textContent(msg);
+
+        this.$mdToast.show(toastConfig);
     }
 }

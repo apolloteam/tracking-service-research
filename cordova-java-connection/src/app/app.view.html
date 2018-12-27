@@ -5,17 +5,27 @@
 
 <md-content layout="column"
             flex>
-    <div layout="column"
-         layout-margin>
-        <md-input-container>
-            <label>Nombre</label>
-            <input ng-model="$ctrl.name">
-        </md-input-container>
-        <div layout="row"
-             layout-align="space-between center">
-            <md-button class="md-raised"
-                       ng-click="$ctrl.sayHello()">Saludar</md-button>
+    <section layout="row"
+             layout-sm="column"
+             layout-align="center center"
+             layout-wrap>
+        <md-button class="md-raised"
+                   ng-click="$ctrl.startService()">Start service</md-button>
+        <md-button class="md-raised"
+                   ng-click="$ctrl.stopService()">Stop service</md-button>
+        <md-button class="md-raised"
+                   ng-click="$ctrl.showLog()">Show log</md-button>
+    </section>
+    <section>
+        <div ng-if="$ctrl.showLogToggle"
+             flex>
+            <div class="md-3-line"
+                 ng-repeat="log in $ctrl.appService.logList">
+                <span class="item-repeat"
+                      layout="row"
+                      layout-align="center center">{{log}}</span>
+                <md-divider></md-divider>
+            </div>
         </div>
-    </div>
-
+    </section>
 </md-content>

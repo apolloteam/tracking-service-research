@@ -10,13 +10,14 @@ import 'angular-material-icons';
 import { NgModule, ModuleDecorated } from 'angular-ts-decorators';
 import { ModuleHelper } from '../core/module.helper';
 import { AppComponent } from './app.component';
+import { AppService } from './app.service';
 
 
 @NgModule({
     declarations: [
         AppComponent
     ],
-    providers: [],
+    providers: [AppService],
     imports: [
         'ui.router',
         'ngMaterial',
