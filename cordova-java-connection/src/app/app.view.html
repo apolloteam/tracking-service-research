@@ -17,8 +17,7 @@
                    ng-click="$ctrl.showLog()">Show log</md-button>
     </section>
     <section>
-        <div ng-if="$ctrl.showLogToggle"
-             flex>
+        <div flex>
             <div class="md-3-line"
                  ng-repeat="log in $ctrl.appService.logList">
                 <span class="item-repeat"

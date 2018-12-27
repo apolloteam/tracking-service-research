@@ -43,8 +43,6 @@ export class AppComponent {
                 // Muestra el toast.
                 const msg = 'Started';
                 this.showToast(msg);
-
-                this.appService.getLogs();
             })
             .catch(() => {
                 // Error.
@@ -65,7 +63,7 @@ export class AppComponent {
         this.appService.stopService()
             .then(() => {
                 this.$log.debug(`${methodName} (then)`);
-                const msg = 'Se detuvo el servicio.';
+                const msg = 'Logs were removed.';
                 this.showToast(msg);
             })
             .catch(() => {
@@ -82,7 +80,7 @@ export class AppComponent {
         const methodName: string = `${AppComponent.name}::showLog`;
         this.$log.debug(`${methodName}`);
 
-        this.showLogToggle = !this.showLogToggle;
+        this.appService.getLogs();
     }
 
     /**

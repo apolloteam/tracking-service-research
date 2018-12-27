@@ -90,6 +90,7 @@ export class AppService {
                 () => {
                     // Success.
                     this.$log.debug(`${methodName} (success)`);
+                    this.logList = [];
                     deferred.resolve();
                 },
                 (reason) => {
