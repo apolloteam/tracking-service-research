@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.io.StringWriter;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -104,12 +107,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 } 
                 catch (Exception ex) 
                 {
-                    ex.printStackTrace();
-                    if (callbackContext != null) {
-                        callbackContext.error(ex.getMessage());
-                    }
-
-                    sendResultError(callbackContext, ex.getMessage());
+                    errorProcess(callbackContext, ex);
                 }
             }
         });
@@ -129,7 +127,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.startService(serviceIntent);
-
+                    // Forzar error.
+                    // int prueba = 10;
+                    // int prueba2 = prueba / 0;
                     String payload = "Started";
                     
                     // Guarda la referencia del contexto de la app web.
@@ -138,12 +138,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 } 
                 catch (Exception ex) 
                 {
-                    ex.printStackTrace();
-                    if (callbackContext != null) {
-                        callbackContext.error(ex.getMessage());
-                    }
-
-                    sendResultError(callbackContext, ex.getMessage());
+                    errorProcess(callbackContext, ex);
                 }
             }
         });
@@ -177,12 +172,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 } 
                 catch (Exception ex) 
                 {
-                    ex.printStackTrace();
-                    if (callbackContext != null) {
-                        callbackContext.error(ex.getMessage());
-                    }
-                    
-                    sendResultError(callbackContext, ex.getMessage());
+                    errorProcess(callbackContext, ex);
                 }
             }
         });
@@ -213,12 +203,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 } 
                 catch (Exception ex) 
                 {
-                    ex.printStackTrace();
-                    if (callbackContext != null) {
-                        callbackContext.error(ex.getMessage());
-                    }
-
-                    sendResultError(callbackContext, ex.getMessage());
+                    errorProcess(callbackContext, ex);
                 }
             }
         });
@@ -253,6 +238,36 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         // Envia la respuesta a la llamada.
         callbackContext.sendPluginResult(pluginResult);
     }
+
+    /**
+     * Envia el error a la aplicacion javascript.
+     * @param callbackContext Contexto de la app web.
+     * @param payload Exception.
+     */
+    private void errorProcess(CallbackContext callbackContext, Exception ex) {
+        // Convierte el payLoad a JSON.
+        Gson gson = new Gson();
+        Map<String, String> exc_map = new HashMap<String, String>();
+        exc_map.put("message", ex.toString());
+        exc_map.put("stacktrace", getStackTrace(ex));
+        // Convierte el payLoad a JSON.
+        String jsonError = new Gson().toJson(exc_map);
+
+        sendResultError(callbackContext, jsonError);
+        ex.printStackTrace();
+        if (callbackContext != null) {
+            callbackContext.error(jsonError);
+        }
+    }
+    /**
+     * Construye el formato del stacktrace.
+     */
+    public static String getStackTrace(final Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString();
+   }
     
     /**
      * Devuelve una cadena del JSONArray o una cadena vacia.

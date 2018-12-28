@@ -65,8 +65,9 @@ export class AppService {
                 },
                 (reason) => {
                     // Fail.
-                    this.$log.debug(`${methodName} (error) reason %o`, reason);
-                    deferred.reject(reason);
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) reason %o`, error);
+                    deferred.reject(error);
                 });
         } else {
             deferred.resolve();
@@ -95,8 +96,9 @@ export class AppService {
                 },
                 (reason) => {
                     // Fail.
-                    this.$log.debug(`${methodName} (error) reason %o`, reason);
-                    deferred.reject(reason);
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) error %o`, error);
+                    deferred.reject(error);
                 });
         } else {
             deferred.resolve();

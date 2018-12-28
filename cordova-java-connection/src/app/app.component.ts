@@ -11,6 +11,7 @@ import { AppService } from './app.service';
 export class AppComponent {
     public static $inject: string[] = [
         '$log',
+        '$mdDialog',
         '$mdToast',
         AppService.name
     ];
@@ -27,6 +28,7 @@ export class AppComponent {
 
     constructor(
         private $log: angular.ILogService,
+        private $mdDialog: angular.material.IDialogService,
         private $mdToast: angular.material.IToastService,
         private appService: AppService) {
         this.$log.debug(`${AppComponent.name}::ctor`);
@@ -54,7 +56,7 @@ export class AppComponent {
             .catch((err) => {
                 // Error.
                 this.$log.debug(`${methodName} (catch)`);
-                this.showToast(err);
+                this.showError(err.message);
             })
             .finally(() => {
                 this.inProgress = false;
@@ -78,7 +80,7 @@ export class AppComponent {
             .catch((err) => {
                 // Error.
                 this.$log.debug(`${methodName} (catch)`);
-                this.showToast(err);
+                this.showError(err.message);
             })
             .finally(() => {
                 this.inProgress = false;
@@ -108,5 +110,21 @@ export class AppComponent {
             .textContent(msg);
 
         this.$mdToast.show(toastConfig);
+    }
+
+    /**
+     * Muestra el error.
+     */
+    public showError(message:string) {
+        const title: string = 'Ha ocurrido un error.';
+        const confirm: angular.material.IConfirmDialog = this.$mdDialog.confirm();
+        confirm
+            .title(title)
+            .textContent(message)
+            .ok('ok')
+            .hasBackdrop(true)
+            .clickOutsideToClose(false)
+            .escapeToClose(false);
+        this.$mdDialog.show(confirm);
     }
 }
