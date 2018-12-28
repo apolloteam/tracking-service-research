@@ -109,17 +109,21 @@ export class AppService {
      * Optiene el listado de logs.
      * @memberof AppService
      */
-    public getLogs(): void {
+    public getLogs(): angular.IPromise<void> {
         const methodName: string = `${AppService.name}::getLogs`;
         this.$log.debug(`${methodName}`);
+        const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
             this.$window.CordovaPluginJavaConnection.getLogs(
                 (resp) => {
                     this.$log.debug(`${methodName} (success)  resp: %o`, resp);
                     const data = JSON.parse(resp);
                     this.insertLog(data);
+                    deferred.resolve();
                 });
         }
+
+        return deferred.promise;
     }
 
     /**

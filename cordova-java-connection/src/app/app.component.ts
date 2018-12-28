@@ -20,6 +20,11 @@ export class AppComponent {
      */
     public showLogToggle: boolean = false;
 
+    /**
+     * Indica si existe un proceso en progreso.
+     */
+    public inProgress: boolean = false;
+
     constructor(
         private $log: angular.ILogService,
         private $mdToast: angular.material.IToastService,
@@ -34,6 +39,8 @@ export class AppComponent {
         const methodName: string = `${AppComponent.name}::startService`;
         this.$log.debug(`${methodName}`);
 
+        this.inProgress = true;
+        
         // Invoca el metodo del servicio angular para conectar con el plugin.
         this.appService.startService()
             .then(() => {
@@ -49,6 +56,9 @@ export class AppComponent {
                 this.$log.debug(`${methodName} (catch)`);
                 this.showToast(err);
             })
+            .finally(() => {
+                this.inProgress = false;
+            });
     }
 
     /**
@@ -57,7 +67,7 @@ export class AppComponent {
     public stopService() {
         const methodName: string = `${AppComponent.name}::stopService`;
         this.$log.debug(`${methodName}`);
-
+        this.inProgress = true;
         this.appService.stopService()
             .then(() => {
                 // Success.
@@ -70,6 +80,9 @@ export class AppComponent {
                 this.$log.debug(`${methodName} (catch)`);
                 this.showToast(err);
             })
+            .finally(() => {
+                this.inProgress = false;
+            });
     }
 
     /**
@@ -78,8 +91,11 @@ export class AppComponent {
     public showLog() {
         const methodName: string = `${AppComponent.name}::showLog`;
         this.$log.debug(`${methodName}`);
-
-        this.appService.getLogs();
+        this.inProgress = true;
+        this.appService.getLogs()
+            .finally(() => {
+                this.inProgress = false;
+            });
     }
 
     /**

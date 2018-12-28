@@ -1,23 +1,42 @@
-<md-toolbar layout-align="center center">
-    <div layout-align="center center"
-         class="md-toolbar-tools">Prueba</div>
+<md-toolbar class="md-whiteframe-3dp md-hue-1"
+            layout="row">
+    <span flex="70"
+          flex-offset="15"
+          layout="row"
+          layout-align="center center"
+          class="title-main">
+        Prueba
+    </span>
+    <div flex
+         layout="row"
+         layout-align="end-center">
+        <md-button class="md-icon-button">
+            <md-icon class="material-icons">close</md-icon>
+        </md-button>
+    </div>
 </md-toolbar>
-
-<md-content layout="column"
-            flex>
-    <section layout="row"
-             layout-sm="column"
-             layout-align="center center"
-             layout-wrap>
+<div layout="column">
+    <div layout="row"
+         layout-align="center center">
         <md-button class="md-raised"
                    ng-click="$ctrl.startService()">Start service</md-button>
         <md-button class="md-raised"
                    ng-click="$ctrl.stopService()">Stop service</md-button>
         <md-button class="md-raised"
                    ng-click="$ctrl.showLog()">Show log</md-button>
-    </section>
-    <section>
-        <div flex>
+    </div>
+</div>
+<md-divider></md-divider>
+<md-progress-linear ng-if="$ctrl.inProgress"
+                    md-mode="indeterminate"></md-progress-linear>
+
+<md-content flex>
+    <div layout="column"
+         flex>
+        <md-divider></md-divider>
+
+        <div layout="column"
+             class="horizontal-scroll">
             <div class="md-3-line"
                  ng-repeat="log in $ctrl.appService.logList">
                 <span class="item-repeat"
@@ -26,5 +45,5 @@
                 <md-divider></md-divider>
             </div>
         </div>
-    </section>
+    </div>
 </md-content>
