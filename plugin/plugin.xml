@@ -8,6 +8,7 @@
 
     <platform name="android">
         <framework src="com.google.code.gson:gson:2.8.4" />
+        <framework src="com.android.support:appcompat-v7:27.1.1" />
 
         <js-module src="www/Cordova-plugin-java-connection.js" name="CordovaPluginJavaConnection">
             <clobbers target="CordovaPluginJavaConnection" />
@@ -18,7 +19,25 @@
                 <param name="android-package" value="com.prueba.conex.CordovaPluginJavaConnection"/>
             </feature>
         </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+        </config-file>
         
-        <source-file src="src/android/CordovaPluginJavaConnection.java" target-dir="src/com/prueba/conex" />
+        <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
+            <application android:name="com.prueba.conex.MyApplication"/>
+        </edit-config>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="com.prueba.conex.MyForegroundService"android:label="MarcoEstrellaProcess" />
+        </config-file>
+
+        <source-file src="src/android/java/CordovaPluginJavaConnection.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/MyApplication.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/AppDatabase.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/Message.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/MyForegroundService.java" target-dir="src/com/prueba/conex" />
+
+        <resource-file src="src/android/res/drawable/ic_running.xml" target="res/drawable/ic_running.xml" />
     </platform>
 </plugin>

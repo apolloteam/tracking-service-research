@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
+import java.util.List;
+
 import com.google.gson.Gson;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -124,6 +126,10 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 try 
                 {
                     // TODO: Iniciar PermanentService.
+                    Intent serviceIntent = new Intent(context, MyForegroundService.class);
+
+                    context.startService(serviceIntent);
+
                     String payload = "Started";
                     
                     // Guarda la referencia del contexto de la app web.
@@ -154,7 +160,15 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 try 
                 {
                     // TODO: Detener PermanentService.
+
+                    Intent serviceIntent = new Intent(context, MyForegroundService.class);
+
+                    context.stopService(serviceIntent);
+
                     // TODO: Limpiar base de datos.
+
+                    new AppDatabase(context).deleteAll();   
+
                     String payload = "Stoped";
 
                     // Guarda la referencia del contexto de la app web.
@@ -185,8 +199,11 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 try 
                 {
                     // TODO: Consultar base de datos.
-                    String[] payload;
-                    payload = new String[]{"TIC 1","TIC 2","TIC 3"};
+                    List<String> messages = new AppDatabase(context).getMessages();
+
+                    Log.v("Cordova", "messages count: "+messages.size());
+
+                    String[] payload = messages.toArray(new String[0]);
                     
                     // Convierte el payLoad a JSON.
                     String json = new Gson().toJson(payload);
