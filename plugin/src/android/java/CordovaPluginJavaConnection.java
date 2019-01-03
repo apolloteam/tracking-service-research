@@ -32,11 +32,13 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     private static CallbackContext startServiceContext = null;
     private static CallbackContext stopServiceContext = null;
     private static CallbackContext getLogsContext = null;
+    private static CallbackContext initParametersContext = null;
+    private static CallbackContext setParametersContext = null;
+    private static CallbackContext getParametersContext = null;
 
     /**
-     * Plugin initialization
-     * - Creates configuration
-     * - Register Receiver to communicate Service with Cordova Plugin
+     * Plugin initialization - Creates configuration - Register Receiver to
+     * communicate Service with Cordova Plugin
      */
     @Override
     protected void pluginInitialize() {
@@ -49,13 +51,18 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         CordovaPluginJavaConnection.startServiceContext = null;
         CordovaPluginJavaConnection.stopServiceContext = null;
         CordovaPluginJavaConnection.getLogsContext = null;
+        CordovaPluginJavaConnection.initParametersContext = null;
+        CordovaPluginJavaConnection.setParametersContext = null;
+        CordovaPluginJavaConnection.getParametersContext = null;
     }
 
     /**
      * Javascript callbacks execution context.
+     * 
      * @param action          The action to execute.
      * @param args            The exec() arguments.
-     * @param callbackContext The callback context used when calling back into JavaScript.
+     * @param callbackContext The callback context used when calling back into
+     *                        JavaScript.
      * @return
      * @throws JSONException
      */
@@ -79,6 +86,18 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                 getLogs(callbackContext);
                 ret = true;
             }
+            if (action.equals("initParameters")) {
+                initParameters(args, callbackContext);
+                ret = true;
+            }
+            if (action.equals("setParameters")) {
+                setParameters(args, callbackContext);
+                ret = true;
+            }
+            if (action.equals("getParameters")) {
+                getParameters(callbackContext);
+                ret = true;
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -88,56 +107,48 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     /**
      * Say Hello.
-     * @param args The exec() arguments.
+     * 
+     * @param args            The exec() arguments.
      * @param callbackContext Contexto de la app web.
      */
     private void sayHello(final JSONArray args, final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-                try 
-                {
+                try {
                     String value = getStringSafe(args, 0);
-                    String payload = "Hola " +  value;
+                    String payload = "Hola " + value;
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.sayHelloContext = callbackContext;
-        
+
                     sendResultSuccess(callbackContext, payload);
-                } 
-                catch (Exception ex) 
-                {
+                } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
                 }
             }
         });
     }
-    
+
     /**
      * Inicia el PermanentService.
+     * 
      * @param callbackContext Contexto de la app web.
      */
     private void startService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-                try 
-                {
-                    // TODO: Iniciar PermanentService.
+                try {
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.startService(serviceIntent);
-                    // Forzar error.
-                    // int prueba = 10;
-                    // int prueba2 = prueba / 0;
-                    String payload = "Started";
-                    
+                    // TODO: Asignar 1 a {SharedPreferences}.serviceRunning.
+
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.startServiceContext = callbackContext;
-                    sendResultSuccess(callbackContext, payload);
-                } 
-                catch (Exception ex) 
-                {
+                    sendResultSuccess(callbackContext, "");
+                } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
                 }
             }
@@ -146,32 +157,28 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     /**
      * Detiene el PermanentService.
+     * 
      * @param callbackContext Contexto de la app web.
      */
     private void stopService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-                try 
-                {
-                    // TODO: Detener PermanentService.
-
+                try {
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.stopService(serviceIntent);
+                    
+                    // TODO: Asignar 0 a {SharedPreferences}.serviceRunning.
 
-                    // TODO: Limpiar base de datos.
-
-                    new AppDatabase(context).deleteAll();   
+                    //new AppDatabase(context).deleteAll();
 
                     String payload = "Stoped";
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.stopServiceContext = callbackContext;
                     sendResultSuccess(callbackContext, payload);
-                } 
-                catch (Exception ex) 
-                {
+                } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
                 }
             }
@@ -180,29 +187,107 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     /**
      * Obtiene los logs de base de datos.
+     * 
      * @param callbackContext Contexto de la app web.
      */
     private void getLogs(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
-                try 
-                {
+                try {
                     // TODO: Consultar base de datos.
                     List<String> messages = new AppDatabase(context).getMessages();
 
-                    Log.v("Cordova", "messages count: "+messages.size());
+                    Log.v("Cordova", "messages count: " + messages.size());
 
                     String[] payload = messages.toArray(new String[0]);
-                    
+
                     // Convierte el payLoad a JSON.
                     String json = new Gson().toJson(payload);
-                    
+
                     CordovaPluginJavaConnection.getLogsContext = callbackContext;
                     sendResultSuccess(callbackContext, json);
-                } 
-                catch (Exception ex) 
-                {
+                } catch (Exception ex) {
+                    errorProcess(callbackContext, ex);
+                }
+            }
+        });
+    }
+
+    /**
+     * Inicializa los parametros del plugin.
+     * 
+     * @param pluginParameters Parametros de la aplicación para transferir al plugin.
+     * @param callbackContext  Contexto de la app web.
+     */
+    private void initParameters(final JSONArray pluginParameters, final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    
+                    JSONObject parameters = pluginParameters.getJSONObject(0);
+
+                    // TODO: Asignar trackingApiBaseUrl, logApiBaseUrl, gpsInterval a SharedPreferences.
+                    String pluginParametersJson = new Gson().toJson(pluginParameters);
+                    // Guarda la referencia del contexto de la app web.
+                    CordovaPluginJavaConnection.initParametersContext = callbackContext;
+                    // callbackContext.success();
+
+                    sendResultSuccess(callbackContext, pluginParametersJson);
+                } catch (Exception ex) {
+                    errorProcess(callbackContext, ex);
+                }
+            }
+        });
+    }
+
+     /**
+     * Establece los parametros del plugin.
+     * 
+     * @param pluginParameters Parametros de la aplicación para transferir al plugin.
+     * @param callbackContext  Contexto de la app web.
+     */
+    private void setParameters(final JSONArray pluginParameters, final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    
+                    JSONObject parameters = pluginParameters.getJSONObject(0);
+
+                    // TODO: Asignar holderId, activityId, ownerId, holderStatus, activityStatus a SharedPreferences.
+
+                    // Guarda la referencia del contexto de la app web.
+                    CordovaPluginJavaConnection.setParametersContext = callbackContext;
+                    callbackContext.success();
+                } catch (Exception ex) {
+                    errorProcess(callbackContext, ex);
+                }
+            }
+        });
+    }
+
+    /**
+     * Obtiene los parametros establecidos en el plugin.
+     * 
+     * @param callbackContext Contexto de la app web.
+     */
+    private void getParameters(final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+
+                    // TODO: Devolver los SharedPreferences en formato JSON con la estructura de pluginParameters.
+                    Object pluginParameters = null; // TODO: Componer objeto desde SharedPreferences.
+                    String pluginParametersJson = new Gson().toJson(pluginParameters);
+
+                    // Guarda la referencia del contexto de la app web.
+                    CordovaPluginJavaConnection.getParametersContext = callbackContext;
+
+                    sendResultSuccess(callbackContext, pluginParametersJson);
+                } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
                 }
             }
@@ -211,28 +296,30 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     /**
      * Envia la respuesta a la aplicacion javascript.
+     * 
      * @param callbackContext Contexto de la app web.
-     * @param payload Respuesta.
+     * @param payload         Respuesta.
      */
     private void sendResultSuccess(CallbackContext callbackContext, String payload) {
-        
+
         if (callbackContext != null) {
-            // Compone el mensaje de respuesta. 
+            // Compone el mensaje de respuesta.
             PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, payload);
             pluginResult.setKeepCallback(true);
 
             // Envia la respuesta a la llamada.
             callbackContext.sendPluginResult(pluginResult);
-        } 
+        }
     }
 
     /**
      * Envia el error a la aplicacion javascript.
+     * 
      * @param callbackContext Contexto de la app web.
-     * @param payload Respuesta.
+     * @param payload         Respuesta.
      */
     private void sendResultError(CallbackContext callbackContext, String payload) {
-        // Compone el mensaje de respuesta. 
+        // Compone el mensaje de respuesta.
         PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR, payload);
 
         // Envia la respuesta a la llamada.
@@ -241,8 +328,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     /**
      * Envia el error a la aplicacion javascript.
+     * 
      * @param callbackContext Contexto de la app web.
-     * @param payload Exception.
+     * @param payload         Exception.
      */
     private void errorProcess(CallbackContext callbackContext, Exception ex) {
         // Convierte el payLoad a JSON.
@@ -259,6 +347,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
             callbackContext.error(jsonError);
         }
     }
+
     /**
      * Construye el formato del stacktrace.
      */
@@ -267,10 +356,11 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         final PrintWriter pw = new PrintWriter(sw, true);
         throwable.printStackTrace(pw);
         return sw.getBuffer().toString();
-   }
-    
+    }
+
     /**
      * Devuelve una cadena del JSONArray o una cadena vacia.
+     * 
      * @param args  Array de datos en formato JSON.
      * @param index Posición que se esta buscando.
      * @return Una cadena del JSONArray o una cadena vacia.

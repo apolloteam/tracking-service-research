@@ -17,3 +17,15 @@ exports.stopService = function (success, error) {
 exports.getLogs = function (success, error) {
   exec(success, error, 'CordovaPluginJavaConnection', 'getLogs');
 };
+
+exports.initParameters = function (pluginParameters, success, error) {
+  exec(success, error, 'CordovaPluginJavaConnection', 'initParameters', [pluginParameters]);
+};
+
+exports.setParameters = function (pluginParameters, success, error) {
+  exec(success, error, 'CordovaPluginJavaConnection', 'setParameters', [pluginParameters]);
+};
+
+exports.getParameters = function (success, error) {
+  exec(success, error, 'CordovaPluginJavaConnection', 'getParameters');
+};

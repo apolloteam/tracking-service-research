@@ -42,7 +42,7 @@ export class AppComponent {
         this.$log.debug(`${methodName}`);
 
         this.inProgress = true;
-        
+
         // Invoca el metodo del servicio angular para conectar con el plugin.
         this.appService.startService()
             .then(() => {
@@ -115,7 +115,7 @@ export class AppComponent {
     /**
      * Muestra el error.
      */
-    public showError(message:string) {
+    public showError(message: string) {
         const title: string = 'Ha ocurrido un error.';
         const confirm: angular.material.IConfirmDialog = this.$mdDialog.confirm();
         confirm

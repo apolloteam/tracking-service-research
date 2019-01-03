@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import { Injectable } from 'angular-ts-decorators';
+import { PluginParameters } from './plugin-parameters.entity';
 
 /**
  * Servicio Angular que se conecta con el plugin.
@@ -88,6 +89,103 @@ export class AppService {
         const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
             this.$window.CordovaPluginJavaConnection.stopService(
+                () => {
+                    // Success.
+                    this.$log.debug(`${methodName} (success)`);
+                    this.logList = [];
+                    deferred.resolve();
+                },
+                (reason) => {
+                    // Fail.
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) error %o`, error);
+                    deferred.reject(error);
+                });
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    }
+
+    /**
+     * Inicializa los parametros del plugin.
+     * @param {PluginParameters} pluginParameters Parametros de la aplicación para transferir al plugin.
+     * @returns {angular.IPromise<void>}
+     * @memberof AppService
+     */
+    public initParameters(pluginParameters: PluginParameters): angular.IPromise<void> {
+        const methodName: string = `${AppService.name}::initParameters`;
+        this.$log.debug(`${methodName}`);
+
+        const deferred: angular.IDeferred<void> = this.$q.defer<void>();
+        if (this.isAvailable()) {
+            this.$window.CordovaPluginJavaConnection.initParameters(
+                pluginParameters,
+                (response) => {
+                    // Success.
+                    this.$log.debug(`${methodName} (success) %o`, response);
+                    this.logList = [];
+                    deferred.resolve();
+                },
+                (reason) => {
+                    // Fail.
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) error %o`, error);
+                    deferred.reject(error);
+                });
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    }
+
+    /**
+     * Establece los parametros del plugin.
+     * @param {PluginParameters} pluginParameters Parametros de la aplicación para transferir al plugin.
+     * @returns {angular.IPromise<void>}
+     * @memberof AppService
+     */
+    public setParameters(pluginParameters: PluginParameters): angular.IPromise<void> {
+        const methodName: string = `${AppService.name}::setParameters`;
+        this.$log.debug(`${methodName}`);
+
+        const deferred: angular.IDeferred<void> = this.$q.defer<void>();
+        if (this.isAvailable()) {
+            this.$window.CordovaPluginJavaConnection.setParameters(
+                pluginParameters,
+                (response) => {
+                    // Success.
+                    this.$log.debug(`${methodName} (success) response %o`, response);
+                    this.logList = [];
+                    deferred.resolve();
+                },
+                (reason) => {
+                    // Fail.
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) error %o`, error);
+                    deferred.reject(error);
+                });
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    }
+
+    /**
+     * Obtiene los parametros establecidos en el plugin.
+     * @returns {angular.IPromise<void>}
+     * @memberof AppService
+     */
+    public getParameters(): angular.IPromise<void> {
+        const methodName: string = `${AppService.name}::getParameters`;
+        this.$log.debug(`${methodName}`);
+
+        const deferred: angular.IDeferred<void> = this.$q.defer<void>();
+        if (this.isAvailable()) {
+            this.$window.CordovaPluginJavaConnection.getParameters(
                 () => {
                     // Success.
                     this.$log.debug(`${methodName} (success)`);
