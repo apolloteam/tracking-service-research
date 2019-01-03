@@ -125,7 +125,6 @@ export class AppService {
                 (response) => {
                     // Success.
                     this.$log.debug(`${methodName} (success) %o`, response);
-                    this.logList = [];
                     deferred.resolve();
                 },
                 (reason) => {
@@ -158,7 +157,6 @@ export class AppService {
                 (response) => {
                     // Success.
                     this.$log.debug(`${methodName} (success) response %o`, response);
-                    this.logList = [];
                     deferred.resolve();
                 },
                 (reason) => {
@@ -179,18 +177,17 @@ export class AppService {
      * @returns {angular.IPromise<void>}
      * @memberof AppService
      */
-    public getParameters(): angular.IPromise<void> {
+    public getParameters(): angular.IPromise<string> {
         const methodName: string = `${AppService.name}::getParameters`;
         this.$log.debug(`${methodName}`);
 
-        const deferred: angular.IDeferred<void> = this.$q.defer<void>();
+        const deferred: angular.IDeferred<string> = this.$q.defer<string>();
         if (this.isAvailable()) {
             this.$window.CordovaPluginJavaConnection.getParameters(
-                () => {
+                (response: string) => {
                     // Success.
-                    this.$log.debug(`${methodName} (success)`);
-                    this.logList = [];
-                    deferred.resolve();
+                    this.$log.debug(`${methodName} (success) response %o`, response);
+                    deferred.resolve(response);
                 },
                 (reason) => {
                     // Fail.

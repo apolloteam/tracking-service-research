@@ -2,6 +2,7 @@ import angular from 'angular';
 import 'angular-material';
 import { Component } from 'angular-ts-decorators';
 import { AppService } from './app.service';
+import { PluginParameters } from './plugin-parameters.entity';
 
 @Component({
     selector: 'app',
@@ -98,6 +99,79 @@ export class AppComponent {
             .finally(() => {
                 this.inProgress = false;
             });
+    }
+
+    /**
+     * Inicializa los parametros del plugin.
+     */
+    public initParams() {
+        const methodName: string = `${AppComponent.name}::initParams`;
+        this.$log.debug(`${methodName}`);
+
+        const parameters: PluginParameters = {
+            trackingApiBaseUrl: 'http://api.traslada.com.ar',
+            logApiBaseUrl: 'http://api.traslada.com.ar',
+            gpsInterval: 10
+        }
+
+        this.appService.initParameters(parameters)
+            .then(() => {
+                // Muestra el toast.
+                const msg = 'Parametros inicializados.';
+                this.showToast(msg);
+            })
+            .catch((error) => {
+                this.showError(error);
+            })
+    }
+
+    /**
+     * Establece los parametros del plugin.
+     */
+    public setParams() {
+        const methodName: string = `${AppComponent.name}::setParams`;
+        this.$log.debug(`${methodName}`);
+
+        const parameters: PluginParameters = {
+            holderId: 778,
+            activityId: 7885478,
+            ownerId: 5159,
+            holderStatus: '100',
+            activityStatus: '500'
+        }
+
+        this.appService.setParameters(parameters)
+            .then(() => {
+                // Muestra el toast.
+                const msg = 'Parametros establecidos';
+                this.showToast(msg);
+            })
+            .catch((error) => {
+                this.showError(error);
+            })
+    }
+
+    /**
+     * Obtiene los parametros establecidos en el plugin.
+     */
+    public getParams() {
+        const methodName: string = `${AppComponent.name}::getParams`;
+        this.$log.debug(`${methodName}`);
+        this.appService.getParameters()
+            .then((response:string) => {
+                const confirm: angular.material.IConfirmDialog = this.$mdDialog.confirm();
+                confirm
+                    .title('Parametros')
+                    .textContent(response)
+                    .ok('ok')
+                    .hasBackdrop(true)
+                    .clickOutsideToClose(false)
+                    .escapeToClose(false);
+                this.$mdDialog.show(confirm);
+            })
+            .catch((error) => {
+                this.showError(error);
+            })
     }
 
     /**

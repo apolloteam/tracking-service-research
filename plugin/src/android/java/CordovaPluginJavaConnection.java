@@ -168,10 +168,10 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.stopService(serviceIntent);
-                    
+
                     // TODO: Asignar 0 a {SharedPreferences}.serviceRunning.
 
-                    //new AppDatabase(context).deleteAll();
+                    // new AppDatabase(context).deleteAll();
 
                     String payload = "Stoped";
 
@@ -217,7 +217,8 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     /**
      * Inicializa los parametros del plugin.
      * 
-     * @param pluginParameters Parametros de la aplicación para transferir al plugin.
+     * @param pluginParameters Parametros de la aplicación para transferir al
+     *                         plugin.
      * @param callbackContext  Contexto de la app web.
      */
     private void initParameters(final JSONArray pluginParameters, final CallbackContext callbackContext) {
@@ -225,16 +226,15 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    
+
                     JSONObject parameters = pluginParameters.getJSONObject(0);
 
-                    // TODO: Asignar trackingApiBaseUrl, logApiBaseUrl, gpsInterval a SharedPreferences.
-                    String pluginParametersJson = new Gson().toJson(pluginParameters);
+                    // TODO: Asignar trackingApiBaseUrl, logApiBaseUrl, gpsInterval a
+                    // SharedPreferences.
+
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.initParametersContext = callbackContext;
-                    // callbackContext.success();
-
-                    sendResultSuccess(callbackContext, pluginParametersJson);
+                    callbackContext.success();
                 } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
                 }
@@ -242,10 +242,11 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         });
     }
 
-     /**
+    /**
      * Establece los parametros del plugin.
      * 
-     * @param pluginParameters Parametros de la aplicación para transferir al plugin.
+     * @param pluginParameters Parametros de la aplicación para transferir al
+     *                         plugin.
      * @param callbackContext  Contexto de la app web.
      */
     private void setParameters(final JSONArray pluginParameters, final CallbackContext callbackContext) {
@@ -253,10 +254,11 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    
+
                     JSONObject parameters = pluginParameters.getJSONObject(0);
 
-                    // TODO: Asignar holderId, activityId, ownerId, holderStatus, activityStatus a SharedPreferences.
+                    // TODO: Asignar holderId, activityId, ownerId, holderStatus, activityStatus a
+                    // SharedPreferences.
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.setParametersContext = callbackContext;
@@ -279,9 +281,13 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
             public void run() {
                 try {
 
-                    // TODO: Devolver los SharedPreferences en formato JSON con la estructura de pluginParameters.
-                    Object pluginParameters = null; // TODO: Componer objeto desde SharedPreferences.
-                    String pluginParametersJson = new Gson().toJson(pluginParameters);
+                    // TODO: Devolver los SharedPreferences en formato JSON con la estructura de
+                    // pluginParameters.
+                    //Object pluginParameters = null; // TODO: Componer objeto desde SharedPreferences.
+                    //String pluginParametersJson = new Gson().toJson(pluginParameters);
+
+                    // MOCK:
+                    String pluginParametersJson = "{'activityId': 7885478, 'holderId': 778}";
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.getParametersContext = callbackContext;

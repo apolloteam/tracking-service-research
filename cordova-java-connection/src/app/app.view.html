@@ -19,6 +19,15 @@
     <div layout="row"
          layout-align="center center">
         <md-button class="md-raised"
+                   ng-click="$ctrl.initParams()">Init Params</md-button>
+        <md-button class="md-raised"
+                   ng-click="$ctrl.setParams()">Set Params</md-button>
+        <md-button class="md-raised"
+                   ng-click="$ctrl.getParams()">Get Params</md-button>
+    </div>
+    <div layout="row"
+         layout-align="center center">
+        <md-button class="md-raised"
                    ng-click="$ctrl.startService()">Start service</md-button>
         <md-button class="md-raised"
                    ng-click="$ctrl.stopService()">Stop service</md-button>
