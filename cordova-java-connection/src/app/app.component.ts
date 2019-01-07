@@ -109,7 +109,7 @@ export class AppComponent {
         this.$log.debug(`${methodName}`);
 
         const parameters: PluginParameters = {
-            trackingApiBaseUrl: 'http://api.traslada.com.ar',
+            trackingApiBaseUrl: 'http://tracking.apolloteam.com.ar',
             logApiBaseUrl: 'http://api.traslada.com.ar',
             gpsInterval: 10
         }
@@ -134,7 +134,7 @@ export class AppComponent {
 
         const parameters: PluginParameters = {
             holderId: 778,
-            activityId: 7885478,
+            activityId: 7777777,
             ownerId: 5159,
             holderStatus: '100',
             activityStatus: '500'
