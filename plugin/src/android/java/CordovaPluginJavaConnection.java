@@ -36,6 +36,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     private static CallbackContext setParametersContext = null;
     private static CallbackContext getParametersContext = null;
 
+    public static final int REQUEST_LOCATION_PERMISSION_START = 369;
+    public static final int REQUEST_LOCATION_PERMISSION_STOP = 963;
+
     /**
      * Plugin initialization - Creates configuration - Register Receiver to
      * communicate Service with Cordova Plugin
@@ -130,43 +133,36 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         });
     }
 
-    /**
-     * Inicia el PermanentService.
-     * 
-     * @param callbackContext Contexto de la app web.
-     */
-    private void startService(final CallbackContext callbackContext) {
-        final Activity context = cordova.getActivity();
+    private void startMyForegroundService(Context context) {
+
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
+
                 try {
+
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.startService(serviceIntent);
-    
-                    AppPreferences preferences = new AppPreferences(context);
-                    preferences.setServiceRunning(true);
 
-                    // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.startServiceContext = callbackContext;
-                    sendResultSuccess(callbackContext, "");
+                    AppPreferences preferences = new AppPreferences(context);
+
+                    preferences.setServiceRunning(true);
+                    
+                    sendResultSuccess(CordovaPluginJavaConnection.startServiceContext, "");
                 } catch (Exception ex) {
-                    errorProcess(callbackContext, ex);
+                    errorProcess(CordovaPluginJavaConnection.startServiceContext, ex);
                 }
             }
         });
     }
 
-    /**
-     * Detiene el PermanentService.
-     * 
-     * @param callbackContext Contexto de la app web.
-     */
-    private void stopService(final CallbackContext callbackContext) {
-        final Activity context = cordova.getActivity();
+    private void stopMyForegroundService(Context context) {
+
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
+
                 try {
+
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.stopService(serviceIntent);
@@ -176,16 +172,101 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     // new AppDatabase(context).deleteAll();
 
-                    String payload = "Stoped";
-
-                    // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.stopServiceContext = callbackContext;
-                    sendResultSuccess(callbackContext, payload);
+                    sendResultSuccess(CordovaPluginJavaConnection.stopServiceContext, "");
                 } catch (Exception ex) {
-                    errorProcess(callbackContext, ex);
+                    errorProcess(CordovaPluginJavaConnection.stopServiceContext, ex);
                 }
             }
         });
+    }
+
+    /**
+     * Inicia el PermanentService.
+     * 
+     * @param callbackContext Contexto de la app web.
+     */
+    private void startService(final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        
+        if ( this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ) {
+
+            startMyForegroundService(context);
+        } else {
+
+            CordovaPluginJavaConnection.startServiceContext = callbackContext;
+            sendResultSuccess(callbackContext, "");
+
+            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_START, Manifest.permission.ACCESS_FINE_LOCATION );
+        }
+    }
+
+    /**
+     * Detiene el PermanentService.
+     * 
+     * @param callbackContext Contexto de la app web.
+     */
+    private void stopService(final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+
+        if ( this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ) {
+
+            stopMyForegroundService(context);
+        } else {
+
+            CordovaPluginJavaConnection.stopServiceContext = callbackContext;
+            sendResultSuccess(callbackContext, "");
+
+            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_STOP, Manifest.permission.ACCESS_FINE_LOCATION );
+        }
+    }
+
+    /**
+     * Callback de la solicitud de permisos.
+     *
+     * @param requestCode  Codigo solicitado.
+     * @param permissions  Permisos.
+     * @param grantResults
+     * @throws JSONException
+     */
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        Log.v("cordova"," 1 requestCode = "+requestCode);
+
+        final Activity context = cordova.getActivity();
+        CallbackContext callbackContext = null;
+        
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION_START:
+
+                callbackContext = CordovaPluginJavaConnection.startServiceContext;
+                break;
+            case REQUEST_LOCATION_PERMISSION_STOP:
+
+                callbackContext = CordovaPluginJavaConnection.stopServiceContext;
+                break;
+        }
+
+        Log.v("cordova"," 2 requestCode = "+requestCode);
+
+        if( grantResults[0] == PackageManager.PERMISSION_DENIED ) {
+            
+            if (callbackContext != null)
+                errorProcess(callbackContext, new Exception("Es necesario el permiso de GPS."));
+
+            return;
+        }
+
+        Log.v("cordova"," 3 requestCode = "+requestCode);
+
+        //Uses switch in order to be able to add another permissions
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION_START:
+                startMyForegroundService(context);
+                break;
+            case REQUEST_LOCATION_PERMISSION_STOP:
+                stopMyForegroundService(context);
+                break;
+        }
     }
 
     /**
