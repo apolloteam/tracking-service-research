@@ -109,7 +109,7 @@ export class AppComponent {
         this.$log.debug(`${methodName}`);
 
         const parameters: PluginParameters = {
-            trackingApiBaseUrl: 'http://api.traslada.com.ar',
+            trackingApiBaseUrl: 'http://tracking.apolloteam.com.ar',
             logApiBaseUrl: 'http://api.traslada.com.ar',
             gpsInterval: 10
         }
@@ -134,7 +134,7 @@ export class AppComponent {
 
         const parameters: PluginParameters = {
             holderId: 778,
-            activityId: 7885478,
+            activityId: 7777777,
             ownerId: 5159,
             holderStatus: '100',
             activityStatus: '500'
@@ -158,16 +158,13 @@ export class AppComponent {
         const methodName: string = `${AppComponent.name}::getParams`;
         this.$log.debug(`${methodName}`);
         this.appService.getParameters()
-            .then((response:string) => {
-                const confirm: angular.material.IConfirmDialog = this.$mdDialog.confirm();
-                confirm
+            .then((response: string) => {
+                const alertDialog: angular.material.IAlertDialog = this.$mdDialog.alert();
+                alertDialog
                     .title('Parametros')
                     .textContent(response)
-                    .ok('ok')
-                    .hasBackdrop(true)
-                    .clickOutsideToClose(false)
-                    .escapeToClose(false);
-                this.$mdDialog.show(confirm);
+                    .ok('ok');
+                return this.$mdDialog.show(alertDialog);
             })
             .catch((error) => {
                 this.showError(error);
