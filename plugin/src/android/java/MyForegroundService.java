@@ -29,6 +29,7 @@ public class MyForegroundService extends Service {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private AppDatabase appDatabase;
+    private AppPreferences preferences;
 
     private LocationManager locationManager;
 
@@ -75,10 +76,11 @@ public class MyForegroundService extends Service {
         Log.v("MyForegroundService", "onCreate");
 
         appDatabase = new AppDatabase(this);
+        preferences = new AppPreferences(this);
 
         locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, preferences.getGspInterval()*1000, 0, locationListener);
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
