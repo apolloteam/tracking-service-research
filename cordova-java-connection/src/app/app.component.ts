@@ -109,7 +109,7 @@ export class AppComponent {
         this.$log.debug(`${methodName}`);
 
         const parameters: PluginParameters = {
-            trackingApiBaseUrl: 'http://tracking.apolloteam.com.ar',
+            trackingApiBaseUrl: 'https://tracking.apolloteam.com.ar',
             logApiBaseUrl: 'http://api.traslada.com.ar',
             gpsInterval: 10
         }

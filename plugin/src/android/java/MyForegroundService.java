@@ -89,7 +89,8 @@ public class MyForegroundService extends Service {
 
             // store on API
 
-            StringBuffer dataSb = new StringBuffer(dateString)
+            StringBuffer dataSb = new StringBuffer("\"")
+                    .append(dateString)
                     .append("|")
                     .append(holderId)
                     .append("|")
@@ -101,7 +102,8 @@ public class MyForegroundService extends Service {
                     .append("|")
                     .append(activityStatus)
                     .append("|")
-                    .append(lastPositionString);
+                    .append(lastPositionString)
+                    .append("\"");
 
             sendTrackedPosition(dataSb.toString());
         }

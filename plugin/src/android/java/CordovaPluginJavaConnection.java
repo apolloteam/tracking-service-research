@@ -146,7 +146,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     AppPreferences preferences = new AppPreferences(context);
 
                     preferences.setServiceRunning(true);
-                    
+
                     sendResultSuccess(CordovaPluginJavaConnection.startServiceContext, "");
                 } catch (Exception ex) {
                     errorProcess(CordovaPluginJavaConnection.startServiceContext, ex);
@@ -169,7 +169,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     AppPreferences preferences = new AppPreferences(context);
                     preferences.setServiceRunning(false);
 
-                    // new AppDatabase(context).deleteAll();
+                    new AppDatabase(context).deleteAll();
 
                     sendResultSuccess(CordovaPluginJavaConnection.stopServiceContext, "");
                 } catch (Exception ex) {
@@ -186,16 +186,17 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     private void startService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
-        
-        if ( this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ) {
+        CordovaPluginJavaConnection.startServiceContext = callbackContext;
+
+        if (this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
             startMyForegroundService(context);
         } else {
 
-            CordovaPluginJavaConnection.startServiceContext = callbackContext;
             sendResultSuccess(callbackContext, "");
 
-            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_START, Manifest.permission.ACCESS_FINE_LOCATION );
+            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_START,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
@@ -206,16 +207,17 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     private void stopService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
+        CordovaPluginJavaConnection.stopServiceContext = callbackContext;
 
-        if ( this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ) {
+        if (this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
             stopMyForegroundService(context);
         } else {
 
-            CordovaPluginJavaConnection.stopServiceContext = callbackContext;
             sendResultSuccess(callbackContext, "");
 
-            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_STOP, Manifest.permission.ACCESS_FINE_LOCATION );
+            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_STOP,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
@@ -229,42 +231,42 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        Log.v("cordova"," 1 requestCode = "+requestCode);
+        Log.v("cordova", " 1 requestCode = " + requestCode);
 
         final Activity context = cordova.getActivity();
         CallbackContext callbackContext = null;
-        
+
         switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION_START:
+        case REQUEST_LOCATION_PERMISSION_START:
 
-                callbackContext = CordovaPluginJavaConnection.startServiceContext;
-                break;
-            case REQUEST_LOCATION_PERMISSION_STOP:
+            callbackContext = CordovaPluginJavaConnection.startServiceContext;
+            break;
+        case REQUEST_LOCATION_PERMISSION_STOP:
 
-                callbackContext = CordovaPluginJavaConnection.stopServiceContext;
-                break;
+            callbackContext = CordovaPluginJavaConnection.stopServiceContext;
+            break;
         }
 
-        Log.v("cordova"," 2 requestCode = "+requestCode);
+        Log.v("cordova", " 2 requestCode = " + requestCode);
 
-        if( grantResults[0] == PackageManager.PERMISSION_DENIED ) {
-            
+        if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+
             if (callbackContext != null)
                 errorProcess(callbackContext, new Exception("Es necesario el permiso de GPS."));
 
             return;
         }
 
-        Log.v("cordova"," 3 requestCode = "+requestCode);
+        Log.v("cordova", " 3 requestCode = " + requestCode);
 
-        //Uses switch in order to be able to add another permissions
+        // Uses switch in order to be able to add another permissions
         switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION_START:
-                startMyForegroundService(context);
-                break;
-            case REQUEST_LOCATION_PERMISSION_STOP:
-                stopMyForegroundService(context);
-                break;
+        case REQUEST_LOCATION_PERMISSION_START:
+            startMyForegroundService(context);
+            break;
+        case REQUEST_LOCATION_PERMISSION_STOP:
+            stopMyForegroundService(context);
+            break;
         }
     }
 
@@ -431,9 +433,12 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     String lastPositionDate = preferences.getLastPositionDate();
                     String lastPosition = preferences.getLastPosition();
 
-                    String pluginParametersJson = "{'trackingApiBaseUrl': '"+trackingApiBaseUrl+"', 'logApiBaseUrl': '"+logApiBaseUrl+"', 'gpsInterval': "+gpsInterval+
-                            ", 'serviceRunning': "+serviceRunning+", 'holderId': "+holderId+", 'activityId': "+activityId+", 'ownerId': "+ownerId+", 'holderStatus': "+holderStatus+
-                            ", 'activityStatus': "+activityStatus+", 'lastPositionDate': '"+lastPositionDate+"', 'lastPosition': '"+lastPosition+"'}";
+                    String pluginParametersJson = "{'trackingApiBaseUrl': '" + trackingApiBaseUrl
+                            + "', 'logApiBaseUrl': '" + logApiBaseUrl + "', 'gpsInterval': " + gpsInterval
+                            + ", 'serviceRunning': " + serviceRunning + ", 'holderId': " + holderId + ", 'activityId': "
+                            + activityId + ", 'ownerId': " + ownerId + ", 'holderStatus': " + holderStatus
+                            + ", 'activityStatus': " + activityStatus + ", 'lastPositionDate': '" + lastPositionDate
+                            + "', 'lastPosition': '" + lastPosition + "'}";
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.getParametersContext = callbackContext;
