@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.StringWriter;
 import java.util.List;
-
 import com.google.gson.Gson;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -35,6 +34,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     private static CallbackContext initParametersContext = null;
     private static CallbackContext setParametersContext = null;
     private static CallbackContext getParametersContext = null;
+
+    public static final int REQUEST_LOCATION_PERMISSION_START = 369;
+    public static final int REQUEST_LOCATION_PERMISSION_STOP = 963;
 
     /**
      * Plugin initialization - Creates configuration - Register Receiver to
@@ -130,6 +132,53 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         });
     }
 
+    private void startMyForegroundService(Context context) {
+
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+
+                try {
+
+                    Intent serviceIntent = new Intent(context, MyForegroundService.class);
+
+                    context.startService(serviceIntent);
+
+                    AppPreferences preferences = new AppPreferences(context);
+
+                    preferences.setServiceRunning(true);
+                    
+                    sendResultSuccess(CordovaPluginJavaConnection.startServiceContext, "");
+                } catch (Exception ex) {
+                    errorProcess(CordovaPluginJavaConnection.startServiceContext, ex);
+                }
+            }
+        });
+    }
+
+    private void stopMyForegroundService(Context context) {
+
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+
+                try {
+
+                    Intent serviceIntent = new Intent(context, MyForegroundService.class);
+
+                    context.stopService(serviceIntent);
+
+                    AppPreferences preferences = new AppPreferences(context);
+                    preferences.setServiceRunning(false);
+
+                    // new AppDatabase(context).deleteAll();
+
+                    sendResultSuccess(CordovaPluginJavaConnection.stopServiceContext, "");
+                } catch (Exception ex) {
+                    errorProcess(CordovaPluginJavaConnection.stopServiceContext, ex);
+                }
+            }
+        });
+    }
+
     /**
      * Inicia el PermanentService.
      * 
@@ -137,22 +186,17 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     private void startService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
-        this.cordova.getThreadPool().execute(new Runnable() {
-            public void run() {
-                try {
-                    Intent serviceIntent = new Intent(context, MyForegroundService.class);
+        
+        if ( this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ) {
 
-                    context.startService(serviceIntent);
-                    // TODO: Asignar 1 a {SharedPreferences}.serviceRunning.
+            startMyForegroundService(context);
+        } else {
 
-                    // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.startServiceContext = callbackContext;
-                    sendResultSuccess(callbackContext, "");
-                } catch (Exception ex) {
-                    errorProcess(callbackContext, ex);
-                }
-            }
-        });
+            CordovaPluginJavaConnection.startServiceContext = callbackContext;
+            sendResultSuccess(callbackContext, "");
+
+            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_START, Manifest.permission.ACCESS_FINE_LOCATION );
+        }
     }
 
     /**
@@ -162,27 +206,66 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     private void stopService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
-        this.cordova.getThreadPool().execute(new Runnable() {
-            public void run() {
-                try {
-                    Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
-                    context.stopService(serviceIntent);
+        if ( this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ) {
 
-                    // TODO: Asignar 0 a {SharedPreferences}.serviceRunning.
+            stopMyForegroundService(context);
+        } else {
 
-                    // new AppDatabase(context).deleteAll();
+            CordovaPluginJavaConnection.stopServiceContext = callbackContext;
+            sendResultSuccess(callbackContext, "");
 
-                    String payload = "Stoped";
+            this.cordova.requestPermission(this, REQUEST_LOCATION_PERMISSION_STOP, Manifest.permission.ACCESS_FINE_LOCATION );
+        }
+    }
 
-                    // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.stopServiceContext = callbackContext;
-                    sendResultSuccess(callbackContext, payload);
-                } catch (Exception ex) {
-                    errorProcess(callbackContext, ex);
-                }
-            }
-        });
+    /**
+     * Callback de la solicitud de permisos.
+     *
+     * @param requestCode  Codigo solicitado.
+     * @param permissions  Permisos.
+     * @param grantResults
+     * @throws JSONException
+     */
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        Log.v("cordova"," 1 requestCode = "+requestCode);
+
+        final Activity context = cordova.getActivity();
+        CallbackContext callbackContext = null;
+        
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION_START:
+
+                callbackContext = CordovaPluginJavaConnection.startServiceContext;
+                break;
+            case REQUEST_LOCATION_PERMISSION_STOP:
+
+                callbackContext = CordovaPluginJavaConnection.stopServiceContext;
+                break;
+        }
+
+        Log.v("cordova"," 2 requestCode = "+requestCode);
+
+        if( grantResults[0] == PackageManager.PERMISSION_DENIED ) {
+            
+            if (callbackContext != null)
+                errorProcess(callbackContext, new Exception("Es necesario el permiso de GPS."));
+
+            return;
+        }
+
+        Log.v("cordova"," 3 requestCode = "+requestCode);
+
+        //Uses switch in order to be able to add another permissions
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION_START:
+                startMyForegroundService(context);
+                break;
+            case REQUEST_LOCATION_PERMISSION_STOP:
+                stopMyForegroundService(context);
+                break;
+        }
     }
 
     /**
@@ -195,8 +278,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    // TODO: Consultar base de datos.
-                    List<String> messages = new AppDatabase(context).getMessages();
+                    List<String> messages = new AppDatabase(context).getTrackingPositions();
 
                     Log.v("Cordova", "messages count: " + messages.size());
 
@@ -229,8 +311,28 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     JSONObject parameters = pluginParameters.getJSONObject(0);
 
-                    // TODO: Asignar trackingApiBaseUrl, logApiBaseUrl, gpsInterval a
-                    // SharedPreferences.
+                    AppPreferences preferences = new AppPreferences(context);
+
+                    try {
+                        String trackingApiBaseUrl = parameters.getString(AppPreferences.TRACKING_API_BASE_URL);
+                        preferences.setTrackingApiBaseUrl(trackingApiBaseUrl);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        String logApiBaseUrl = parameters.getString(AppPreferences.LOG_API_BASE_URL);
+                        preferences.setLogApiBaseUrl(logApiBaseUrl);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Integer gpsInterval = parameters.getInt(AppPreferences.GPS_INTERVAL);
+                        preferences.setGspInterval(gpsInterval);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.initParametersContext = callbackContext;
@@ -257,8 +359,42 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     JSONObject parameters = pluginParameters.getJSONObject(0);
 
-                    // TODO: Asignar holderId, activityId, ownerId, holderStatus, activityStatus a
-                    // SharedPreferences.
+                    AppPreferences preferences = new AppPreferences(context);
+
+                    try {
+                        Integer holderId = parameters.getInt(AppPreferences.HOLDER_ID);
+                        preferences.setHolderId(holderId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Integer activityId = parameters.getInt(AppPreferences.ACTIVITY_ID);
+                        preferences.setActivityId(activityId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Integer ownerId = parameters.getInt(AppPreferences.OWNER_ID);
+                        preferences.setOwnerId(ownerId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Integer holderStatus = parameters.getInt(AppPreferences.HOLDER_STATUS);
+                        preferences.setHolderStatus(holderStatus);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Integer activityStatus = parameters.getInt(AppPreferences.ACTIVITY_STATUS);
+                        preferences.setActivityStatus(activityStatus);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.setParametersContext = callbackContext;
@@ -281,13 +417,23 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
             public void run() {
                 try {
 
-                    // TODO: Devolver los SharedPreferences en formato JSON con la estructura de
-                    // pluginParameters.
-                    //Object pluginParameters = null; // TODO: Componer objeto desde SharedPreferences.
-                    //String pluginParametersJson = new Gson().toJson(pluginParameters);
+                    AppPreferences preferences = new AppPreferences(context);
 
-                    // MOCK:
-                    String pluginParametersJson = "{'activityId': 7885478, 'holderId': 778}";
+                    String trackingApiBaseUrl = preferences.getTrackingApiBaseUrl();
+                    String logApiBaseUrl = preferences.getLogApiBaseUrl();
+                    Integer gpsInterval = preferences.getGspInterval();
+                    Integer serviceRunning = preferences.getServiceRunning();
+                    Integer holderId = preferences.getHolderId();
+                    Integer activityId = preferences.getActivityId();
+                    Integer ownerId = preferences.getOwnerId();
+                    Integer holderStatus = preferences.getHolderStatus();
+                    Integer activityStatus = preferences.getActivityStatus();
+                    String lastPositionDate = preferences.getLastPositionDate();
+                    String lastPosition = preferences.getLastPosition();
+
+                    String pluginParametersJson = "{'trackingApiBaseUrl': '"+trackingApiBaseUrl+"', 'logApiBaseUrl': '"+logApiBaseUrl+"', 'gpsInterval': "+gpsInterval+
+                            ", 'serviceRunning': "+serviceRunning+", 'holderId': "+holderId+", 'activityId': "+activityId+", 'ownerId': "+ownerId+", 'holderStatus': "+holderStatus+
+                            ", 'activityStatus': "+activityStatus+", 'lastPositionDate': '"+lastPositionDate+"', 'lastPosition': '"+lastPosition+"'}";
 
                     // Guarda la referencia del contexto de la app web.
                     CordovaPluginJavaConnection.getParametersContext = callbackContext;

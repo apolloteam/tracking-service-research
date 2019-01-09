@@ -9,6 +9,11 @@
     <platform name="android">
         <framework src="com.google.code.gson:gson:2.8.4" />
         <framework src="com.android.support:appcompat-v7:27.1.1" />
+        <framework src="com.android.support:recyclerview-v7:27.1.1" />
+        <framework src="com.google.android.gms:play-services-location:16.0.0" />
+        <framework src="com.squareup.retrofit2:retrofit:2.5.0" />
+        <framework src="com.squareup.retrofit2:converter-scalars:2.5.0" />
+        <framework src="com.squareup.okhttp3:logging-interceptor:3.9.1" />
 
         <js-module src="www/Cordova-plugin-java-connection.js" name="CordovaPluginJavaConnection">
             <clobbers target="CordovaPluginJavaConnection" />
@@ -22,6 +27,8 @@
 
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
         </config-file>
         
         <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
@@ -30,13 +37,24 @@
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <service android:name="com.prueba.conex.MyForegroundService"android:label="MarcoEstrellaProcess" />
+            <receiver android:name="com.prueba.conex.PlugInControlReceiver">
+                <intent-filter>
+                    <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                    <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                </intent-filter>
+            </receiver>
         </config-file>
 
         <source-file src="src/android/java/CordovaPluginJavaConnection.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/MyApplication.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/AppDatabase.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/Message.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/AppPreferences.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/MyForegroundService.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/PlugInControlReceiver.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/RetrofitCreator.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/TrackingPositionModel.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/TrasladaLogService.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/TrasladaTrackerService.java" target-dir="src/com/prueba/conex" />
 
         <resource-file src="src/android/res/drawable/ic_running.xml" target="res/drawable/ic_running.xml" />
     </platform>

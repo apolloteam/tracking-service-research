@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
-import com.prueba.conex.Message;
 
 public class AppDatabase extends SQLiteOpenHelper {
 
@@ -18,51 +17,81 @@ public class AppDatabase extends SQLiteOpenHelper {
         Log.v("AppDatabaseHelper", "DB working....");
     }
 
+    private StringBuilder trackingPositionsScript = new StringBuilder("CREATE TABLE trackingPositions( ")
+            .append("id INTEGER  PRIMARY KEY AUTOINCREMENT, ")
+            .append("date TEXT, ")
+            .append("holderId INTEGER, ")
+            .append("activityId INTEGER, ")
+            .append("ownerId INTEGER, ")
+            .append("holderStatus INTEGER, ")
+            .append("activityStatus INTEGER, ")
+            .append("lat TEXT, ")
+            .append("lng TEXT, ")
+            .append("accuracy DECIMAL, ")
+            .append("speed DECIMAL )");
+
     @Override public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        sqLiteDatabase.execSQL("CREATE TABLE message ( id INTEGER  PRIMARY KEY AUTOINCREMENT , text TEXT);");
+        sqLiteDatabase.execSQL(trackingPositionsScript.toString());
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    @Override public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
 
-    public long insertMessage(Message message){
+    public long insertMessage(TrackingPositionModel trackingPositionModel){
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues insert = new ContentValues();
-        insert.put("text", message.getText());
+        insert.put("date", trackingPositionModel.getDate());
+        insert.put("holderId", trackingPositionModel.getHolderId());
+        insert.put("activityId", trackingPositionModel.getActivityId());
+        insert.put("ownerId", trackingPositionModel.getOwnerId());
+        insert.put("holderStatus", trackingPositionModel.getHolderStatus());
+        insert.put("activityStatus", trackingPositionModel.getActivityStatus());
+        insert.put("lat", trackingPositionModel.getLat());
+        insert.put("lng", trackingPositionModel.getLng());
+        insert.put("accuracy", trackingPositionModel.getAccuracy());
+        insert.put("speed", trackingPositionModel.getSpeed());
 
-        long newID = db.insert("message", null, insert);
-
-        Log.v("AppDatabaseHelper", "new message ID: "+newID);
+        long newID = db.insert("trackingPositions", null, insert);
 
         db.close();
 
         return newID;
     }
 
-    public List<String> getMessages() {
+    public List<String> getTrackingPositions() {
 
         List<String> items = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT text FROM message order by id desc", null);
+        Cursor cursor = db.rawQuery("SELECT id, date, lat, lng FROM trackingPositions order by id desc", null);
 
         if (cursor.moveToFirst()) {
             do {
 
-                String item = cursor.getString(cursor.getColumnIndex("text"));
-                items.add(item);
+                Integer id = cursor.getInt(cursor.getColumnIndex("id"));
+                String date = cursor.getString(cursor.getColumnIndex("date"));
+                String lat = cursor.getString(cursor.getColumnIndex("lat"));
+                String lng = cursor.getString(cursor.getColumnIndex("lng"));
+
+                TrackingPositionModel model = new TrackingPositionModel();
+                model.setId(id);
+                model.setDate(date);
+                model.setLat(lat);
+                model.setLng(lng);
+
+                String text = date+", lat: "+lat+", lng: "+lng;
+
+                items.add(text);
+
             } while (cursor.moveToNext());
         }
 
         db.close();
-
-        Log.v("AppDatabaseHelper", "Messages count: "+items.size());
 
         return items;
     }
@@ -71,10 +100,8 @@ public class AppDatabase extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.execSQL("DELETE FROM message");
+        db.execSQL("DELETE FROM trackingPositions");
 
         db.close();
-
-        Log.v("AppDatabaseHelper", "Messages were deleted");
     }
 }
