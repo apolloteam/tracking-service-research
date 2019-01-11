@@ -34,6 +34,13 @@
         <md-button class="md-raised"
                    ng-click="$ctrl.showLog()">Show log</md-button>
     </div>
+    <div layout="row"
+         layout-align="center center">
+        <md-button class="md-raised"
+                   ng-click="$ctrl.getTrackingPositionsByActivity()">get positions by Id</md-button>
+        <md-button class="md-raised"
+                   ng-click="$ctrl.deleteTrackingPositionsByActivity()">delete positions by Id</md-button>
+    </div>
 </div>
 <md-divider></md-divider>
 <md-progress-linear ng-if="$ctrl.inProgress"

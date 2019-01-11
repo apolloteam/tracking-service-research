@@ -203,7 +203,7 @@ export class AppService {
     }
 
     /**
-     * Optiene el listado de logs.
+     * Obtiene el listado de logs.
      * @memberof AppService
      */
     public getLogs(): angular.IPromise<void> {
@@ -222,6 +222,68 @@ export class AppService {
 
         return deferred.promise;
     }
+
+    /**
+     * Obtiene el trackeo de puntos de una actividad.
+     * @param {string} activityId Id de la actividad.
+     * @returns {angular.IPromise<string[]>} Promesa con los puntos de la actividad.
+     * @memberof AppService
+     */
+    public getTrackingPositionsByActivity(activityId: string): angular.IPromise<string[]> {
+        const methodName: string = `${AppService.name}::getTrackingPositionsByActivity`;
+        this.$log.debug(`${methodName}`);
+
+        const deferred: angular.IDeferred<string[]> = this.$q.defer();
+
+        if (this.isAvailable()) {
+            this.$window.CordovaPluginJavaConnection.getTrackingPositionsByActivity(
+                activityId,
+                (resp) => {
+                    this.$log.debug(`${methodName} (success)  resp: %o`, resp);
+                    const data: string[] = resp
+                    deferred.resolve(data);
+                },
+                (reason) => {
+                    // Fail.
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) error %o`, error);
+                    deferred.reject(error);
+                });
+        }
+
+        return deferred.promise;
+    }
+
+    /**
+     * Elimina el trackeo de puntos de una actividad.
+     * @param {string} activityId Id de la actividad.
+     * @returns {angular.IPromise<void>} Promesa de confirmación.
+     * @memberof AppService
+     */
+    public deleteTrackingPositionsByActivity(activityId: string): angular.IPromise<void> {
+        const methodName: string = `${AppService.name}::deleteTrackingPositionsByActivity`;
+        this.$log.debug(`${methodName}`);
+
+        const deferred: angular.IDeferred<void> = this.$q.defer();
+
+        if (this.isAvailable()) {
+            this.$window.CordovaPluginJavaConnection.deleteTrackingPositionsByActivity(
+                activityId,
+                (resp) => { // Success.
+                    this.$log.debug(`${methodName} (success) response %o`, resp);
+                    deferred.resolve();
+                },
+                (reason) => {
+                    // Fail.
+                    const error = JSON.parse(reason);
+                    this.$log.debug(`${methodName} (error) error %o`, error);
+                    deferred.reject(error);
+                });
+        }
+
+        return deferred.promise;
+    }
+
 
     /**
      * Proceso de almacenado de log.

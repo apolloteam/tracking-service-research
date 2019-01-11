@@ -17,29 +17,28 @@ public class AppDatabase extends SQLiteOpenHelper {
         Log.v("AppDatabaseHelper", "DB working....");
     }
 
+    private final String ALL_ACTIVITIES_KEY = "ALL_ACTIVITIES_KEY";
+
+    private String defaultValueActivityId = this.ALL_ACTIVITIES_KEY;
+
     private StringBuilder trackingPositionsScript = new StringBuilder("CREATE TABLE trackingPositions( ")
-            .append("id INTEGER  PRIMARY KEY AUTOINCREMENT, ")
-            .append("date TEXT, ")
-            .append("holderId INTEGER, ")
-            .append("activityId INTEGER, ")
-            .append("ownerId INTEGER, ")
-            .append("holderStatus INTEGER, ")
-            .append("activityStatus INTEGER, ")
-            .append("lat TEXT, ")
-            .append("lng TEXT, ")
-            .append("accuracy DECIMAL, ")
+            .append("id INTEGER  PRIMARY KEY AUTOINCREMENT, ").append("date TEXT, ").append("holderId INTEGER, ")
+            .append("activityId INTEGER, ").append("ownerId INTEGER, ").append("holderStatus INTEGER, ")
+            .append("activityStatus INTEGER, ").append("lat TEXT, ").append("lng TEXT, ").append("accuracy DECIMAL, ")
             .append("speed DECIMAL )");
 
-    @Override public void onCreate(SQLiteDatabase sqLiteDatabase) {
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         sqLiteDatabase.execSQL(trackingPositionsScript.toString());
     }
 
-    @Override public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
 
-    public long insertMessage(TrackingPositionModel trackingPositionModel){
+    public long insertMessage(TrackingPositionModel trackingPositionModel) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -63,12 +62,22 @@ public class AppDatabase extends SQLiteOpenHelper {
     }
 
     public List<String> getTrackingPositions() {
+        return this.getTrackingPositions(this.defaultValueActivityId);
+    }
 
+    public List<String> getTrackingPositions(final String activityId) {
         List<String> items = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
+        String query;
+        if (this.ALL_ACTIVITIES_KEY.equals(activityId)) {
+            query = "SELECT id, date, lat, lng FROM trackingPositions order by id desc";
+        } else {
+            query = "SELECT id, date, lat, lng FROM trackingPositions WHERE activityId = " + activityId
+                    + " order by id desc";
+        }
 
-        Cursor cursor = db.rawQuery("SELECT id, date, lat, lng FROM trackingPositions order by id desc", null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -84,7 +93,7 @@ public class AppDatabase extends SQLiteOpenHelper {
                 model.setLat(lat);
                 model.setLng(lng);
 
-                String text = date+", lat: "+lat+", lng: "+lng;
+                String text = date + ", lat: " + lat + ", lng: " + lng;
 
                 items.add(text);
 
@@ -96,11 +105,23 @@ public class AppDatabase extends SQLiteOpenHelper {
         return items;
     }
 
-    public void deleteAll() {
+    public void deleteTrackingPositions() {
+
+        this.deleteTrackingPositions(this.defaultValueActivityId);
+    }
+
+    public void deleteTrackingPositions(String activityId) {
 
         SQLiteDatabase db = this.getWritableDatabase();
+        String deleteQuery;
 
-        db.execSQL("DELETE FROM trackingPositions");
+        if (this.ALL_ACTIVITIES_KEY.equals(activityId)) {
+            deleteQuery = "DELETE FROM trackingPositions";
+        } else {
+            deleteQuery = "DELETE FROM trackingPositions WHERE activityId = " + activityId;
+        }
+
+        db.execSQL(deleteQuery);
 
         db.close();
     }

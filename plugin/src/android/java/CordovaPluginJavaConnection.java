@@ -34,6 +34,8 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     private static CallbackContext initParametersContext = null;
     private static CallbackContext setParametersContext = null;
     private static CallbackContext getParametersContext = null;
+    private static CallbackContext getTrackingPositionsByActivityContext = null;
+    private static CallbackContext deleteTrackingPositionsByActivityContext = null;
 
     public static final int REQUEST_LOCATION_PERMISSION_START = 369;
     public static final int REQUEST_LOCATION_PERMISSION_STOP = 963;
@@ -56,6 +58,8 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         CordovaPluginJavaConnection.initParametersContext = null;
         CordovaPluginJavaConnection.setParametersContext = null;
         CordovaPluginJavaConnection.getParametersContext = null;
+        CordovaPluginJavaConnection.getTrackingPositionsByActivityContext = null;
+        CordovaPluginJavaConnection.deleteTrackingPositionsByActivityContext = null;
     }
 
     /**
@@ -98,6 +102,14 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
             }
             if (action.equals("getParameters")) {
                 getParameters(callbackContext);
+                ret = true;
+            }
+            if (action.equals("getTrackingPositionsByActivity")) {
+                getTrackingPositionsByActivity(args, callbackContext);
+                ret = true;
+            }
+            if (action.equals("deleteTrackingPositionsByActivity")) {
+                deleteTrackingPositionsByActivity(args, callbackContext);
                 ret = true;
             }
         } catch (Exception ex) {
@@ -169,7 +181,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     AppPreferences preferences = new AppPreferences(context);
                     preferences.setServiceRunning(false);
 
-                    new AppDatabase(context).deleteAll();
+                    new AppDatabase(context).deleteTrackingPositions();
 
                     sendResultSuccess(CordovaPluginJavaConnection.stopServiceContext, "");
                 } catch (Exception ex) {
@@ -444,6 +456,52 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     CordovaPluginJavaConnection.getParametersContext = callbackContext;
 
                     sendResultSuccess(callbackContext, pluginParametersJson);
+                } catch (Exception ex) {
+                    errorProcess(callbackContext, ex);
+                }
+            }
+        });
+    }
+
+    private void getTrackingPositionsByActivity(JSONArray args, final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+
+                    String activityId = getStringSafe(args, 0);
+
+                    List<String> messages = new AppDatabase(context).getTrackingPositions(activityId);
+
+                    Log.v("Cordova", "messages count: " + messages.size());
+
+                    String[] payload = messages.toArray(new String[0]);
+
+                    // Convierte el payLoad a JSON.
+                    String json = new Gson().toJson(payload);
+
+                    CordovaPluginJavaConnection.getTrackingPositionsByActivityContext = callbackContext;
+                    sendResultSuccess(callbackContext, json);
+                } catch (Exception ex) {
+                    errorProcess(callbackContext, ex);
+                }
+            }
+        });
+    }
+
+    private void deleteTrackingPositionsByActivity(JSONArray args, final CallbackContext callbackContext) {
+        final Activity context = cordova.getActivity();
+        this.cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+
+                    String activityId = getStringSafe(args, 0);
+
+                    new AppDatabase(context).deleteTrackingPositions(activityId);
+
+                    CordovaPluginJavaConnection.deleteTrackingPositionsByActivityContext = callbackContext;
+                    sendResultSuccess(callbackContext, "");
+
                 } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
                 }

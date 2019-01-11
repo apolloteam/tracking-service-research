@@ -29,3 +29,11 @@ exports.setParameters = function (pluginParameters, success, error) {
 exports.getParameters = function (success, error) {
   exec(success, error, 'CordovaPluginJavaConnection', 'getParameters');
 };
+
+exports.getTrackingPositionsByActivity = function (activityId, success, error) {
+  exec(success, error, 'CordovaPluginJavaConnection', 'getTrackingPositionsByActivity', [activityId]);
+};
+
+exports.deleteTrackingPositionsByActivity = function (activityId, success, error) {
+  exec(success, error, 'CordovaPluginJavaConnection', 'deleteTrackingPositionsByActivity', [activityId]);
+};

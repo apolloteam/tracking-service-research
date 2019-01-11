@@ -22,6 +22,14 @@ export class AppComponent {
      */
     public showLogToggle: boolean = false;
 
+    private DEFAULT_PARAMS: PluginParameters = {
+        holderId: 778,
+        activityId: 7777777,
+        ownerId: 5159,
+        holderStatus: '100',
+        activityStatus: '500'
+    }
+
     /**
      * Indica si existe un proceso en progreso.
      */
@@ -132,15 +140,9 @@ export class AppComponent {
         const methodName: string = `${AppComponent.name}::setParams`;
         this.$log.debug(`${methodName}`);
 
-        const parameters: PluginParameters = {
-            holderId: 778,
-            activityId: 7777777,
-            ownerId: 5159,
-            holderStatus: '100',
-            activityStatus: '500'
-        }
 
-        this.appService.setParameters(parameters)
+
+        this.appService.setParameters(this.DEFAULT_PARAMS)
             .then(() => {
                 // Muestra el toast.
                 const msg = 'Parametros establecidos';
@@ -158,7 +160,7 @@ export class AppComponent {
         const methodName: string = `${AppComponent.name}::getParams`;
         this.$log.debug(`${methodName}`);
         this.appService.getParameters()
-            .then((response:string) => {
+            .then((response: string) => {
                 const confirm: angular.material.IConfirmDialog = this.$mdDialog.confirm();
                 confirm
                     .title('Parametros')
@@ -200,5 +202,37 @@ export class AppComponent {
             .clickOutsideToClose(false)
             .escapeToClose(false);
         this.$mdDialog.show(confirm);
+    }
+
+    /**
+     * Obtiene posiciones a partir del id de una actividad.
+     * @memberof AppComponent
+     */
+    public getTrackingPositionsByActivity(): void {
+        const activityId: string = <any>this.DEFAULT_PARAMS.activityId;
+        this.appService.getTrackingPositionsByActivity(activityId)
+            .then((positions: any) => {
+                this.$log.debug(`${AppComponent.name}::getTrackingPositionsByActivity (success) positions: %o`, positions);
+            })
+            .catch((err: any) => {
+                this.$log.debug(err);
+            });
+    }
+
+    /**
+     * Elimina las posiciones a partir del id de una actividad.
+     * @memberof AppComponent
+     */
+    public deleteTrackingPositionsByActivity(): void {
+        const methodName: string = `${AppComponent.name}::deleteTrackingPositionsByActivity`;
+        this.$log.debug(methodName)
+        const activityId: string = <any>this.DEFAULT_PARAMS.activityId;
+        this.appService.deleteTrackingPositionsByActivity(activityId)
+            .then(() => {
+                this.$log.debug(`${methodName} (success)`);
+            })
+            .catch((err: any) => {
+                this.$log.debug(`${methodName} (catch) err: %o`, err);
+            });
     }
 }
