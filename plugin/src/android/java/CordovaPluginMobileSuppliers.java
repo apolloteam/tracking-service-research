@@ -1,4 +1,4 @@
-package com.prueba.conex;
+package com.traslada.prestadores.plugin;
 
 import android.Manifest;
 import android.app.Activity;
@@ -25,7 +25,7 @@ import org.json.JSONObject;
 /**
  * Main plugin class.
  */
-public class CordovaPluginJavaConnection extends CordovaPlugin {
+public class CordovaPluginMobileSuppliers extends CordovaPlugin {
 
     private static CallbackContext sayHelloContext = null;
     private static CallbackContext startServiceContext = null;
@@ -51,15 +51,15 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     @Override
     public void onReset() {
-        CordovaPluginJavaConnection.sayHelloContext = null;
-        CordovaPluginJavaConnection.startServiceContext = null;
-        CordovaPluginJavaConnection.stopServiceContext = null;
-        CordovaPluginJavaConnection.getLogsContext = null;
-        CordovaPluginJavaConnection.initParametersContext = null;
-        CordovaPluginJavaConnection.setParametersContext = null;
-        CordovaPluginJavaConnection.getParametersContext = null;
-        CordovaPluginJavaConnection.getTrackingPositionsByActivityContext = null;
-        CordovaPluginJavaConnection.deleteTrackingPositionsByActivityContext = null;
+        CordovaPluginMobileSuppliers.sayHelloContext = null;
+        CordovaPluginMobileSuppliers.startServiceContext = null;
+        CordovaPluginMobileSuppliers.stopServiceContext = null;
+        CordovaPluginMobileSuppliers.getLogsContext = null;
+        CordovaPluginMobileSuppliers.initParametersContext = null;
+        CordovaPluginMobileSuppliers.setParametersContext = null;
+        CordovaPluginMobileSuppliers.getParametersContext = null;
+        CordovaPluginMobileSuppliers.getTrackingPositionsByActivityContext = null;
+        CordovaPluginMobileSuppliers.deleteTrackingPositionsByActivityContext = null;
     }
 
     /**
@@ -134,7 +134,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     String payload = "Hola " + value;
 
                     // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.sayHelloContext = callbackContext;
+                    CordovaPluginMobileSuppliers.sayHelloContext = callbackContext;
 
                     sendResultSuccess(callbackContext, payload);
                 } catch (Exception ex) {
@@ -159,9 +159,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     preferences.setServiceRunning(true);
 
-                    sendResultSuccess(CordovaPluginJavaConnection.startServiceContext, "");
+                    sendResultSuccess(CordovaPluginMobileSuppliers.startServiceContext, "");
                 } catch (Exception ex) {
-                    errorProcess(CordovaPluginJavaConnection.startServiceContext, ex);
+                    errorProcess(CordovaPluginMobileSuppliers.startServiceContext, ex);
                 }
             }
         });
@@ -183,9 +183,9 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     new AppDatabase(context).deleteTrackingPositions();
 
-                    sendResultSuccess(CordovaPluginJavaConnection.stopServiceContext, "");
+                    sendResultSuccess(CordovaPluginMobileSuppliers.stopServiceContext, "");
                 } catch (Exception ex) {
-                    errorProcess(CordovaPluginJavaConnection.stopServiceContext, ex);
+                    errorProcess(CordovaPluginMobileSuppliers.stopServiceContext, ex);
                 }
             }
         });
@@ -198,7 +198,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     private void startService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
-        CordovaPluginJavaConnection.startServiceContext = callbackContext;
+        CordovaPluginMobileSuppliers.startServiceContext = callbackContext;
 
         if (this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
@@ -219,7 +219,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
      */
     private void stopService(final CallbackContext callbackContext) {
         final Activity context = cordova.getActivity();
-        CordovaPluginJavaConnection.stopServiceContext = callbackContext;
+        CordovaPluginMobileSuppliers.stopServiceContext = callbackContext;
 
         if (this.cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
@@ -251,11 +251,11 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         switch (requestCode) {
         case REQUEST_LOCATION_PERMISSION_START:
 
-            callbackContext = CordovaPluginJavaConnection.startServiceContext;
+            callbackContext = CordovaPluginMobileSuppliers.startServiceContext;
             break;
         case REQUEST_LOCATION_PERMISSION_STOP:
 
-            callbackContext = CordovaPluginJavaConnection.stopServiceContext;
+            callbackContext = CordovaPluginMobileSuppliers.stopServiceContext;
             break;
         }
 
@@ -301,7 +301,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     // Convierte el payLoad a JSON.
                     String json = new Gson().toJson(payload);
 
-                    CordovaPluginJavaConnection.getLogsContext = callbackContext;
+                    CordovaPluginMobileSuppliers.getLogsContext = callbackContext;
                     sendResultSuccess(callbackContext, json);
                 } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
@@ -349,7 +349,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     }
 
                     // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.initParametersContext = callbackContext;
+                    CordovaPluginMobileSuppliers.initParametersContext = callbackContext;
                     callbackContext.success();
                 } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
@@ -411,7 +411,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     }
 
                     // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.setParametersContext = callbackContext;
+                    CordovaPluginMobileSuppliers.setParametersContext = callbackContext;
                     callbackContext.success();
                 } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
@@ -453,7 +453,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                             + "', 'lastPosition': '" + lastPosition + "'}";
 
                     // Guarda la referencia del contexto de la app web.
-                    CordovaPluginJavaConnection.getParametersContext = callbackContext;
+                    CordovaPluginMobileSuppliers.getParametersContext = callbackContext;
 
                     sendResultSuccess(callbackContext, pluginParametersJson);
                 } catch (Exception ex) {
@@ -480,7 +480,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     // Convierte el payLoad a JSON.
                     String json = new Gson().toJson(payload);
 
-                    CordovaPluginJavaConnection.getTrackingPositionsByActivityContext = callbackContext;
+                    CordovaPluginMobileSuppliers.getTrackingPositionsByActivityContext = callbackContext;
                     sendResultSuccess(callbackContext, json);
                 } catch (Exception ex) {
                     errorProcess(callbackContext, ex);
@@ -499,7 +499,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     new AppDatabase(context).deleteTrackingPositions(activityId);
 
-                    CordovaPluginJavaConnection.deleteTrackingPositionsByActivityContext = callbackContext;
+                    CordovaPluginMobileSuppliers.deleteTrackingPositionsByActivityContext = callbackContext;
                     sendResultSuccess(callbackContext, "");
 
                 } catch (Exception ex) {

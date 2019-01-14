@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cordova-plugin-java-connection" version="0.2.3">
-    <name>Cordova Plugin Java Connection</name>
-    <description>Cordova Plugin Java Connection</description>
+        id="cordova-plugin-mobile-suppliers" version="0.0.1">
+    <name>Cordova Plugin Mobile Suppliers</name>
+    <description>Cordova Plugin Mobile Suppliers</description>
     <license>Apache 2.0</license>
     <keywords>cordova,device</keywords>
 
@@ -15,13 +15,13 @@
         <framework src="com.squareup.retrofit2:converter-scalars:2.5.0" />
         <framework src="com.squareup.okhttp3:logging-interceptor:3.9.1" />
 
-        <js-module src="www/Cordova-plugin-java-connection.js" name="CordovaPluginJavaConnection">
-            <clobbers target="CordovaPluginJavaConnection" />
+        <js-module src="www/cordova-plugin-mobile-suppliers.js" name="CordovaPluginMobileSuppliers">
+            <clobbers target="CordovaPluginMobileSuppliers" />
         </js-module>
 
         <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="CordovaPluginJavaConnection">
-                <param name="android-package" value="com.prueba.conex.CordovaPluginJavaConnection"/>
+            <feature name="CordovaPluginMobileSuppliers">
+                <param name="android-package" value="com.traslada.prestadores.plugin.CordovaPluginMobileSuppliers"/>
             </feature>
         </config-file>
 
@@ -32,12 +32,12 @@
         </config-file>
         
         <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
-            <application android:name="com.prueba.conex.MyApplication"/>
+            <application android:name="com.traslada.prestadores.plugin.MyApplication"/>
         </edit-config>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <service android:name="com.prueba.conex.MyForegroundService"android:label="MarcoEstrellaProcess" />
-            <receiver android:name="com.prueba.conex.PlugInControlReceiver">
+            <service android:name="com.traslada.prestadores.plugin.MyForegroundService"android:label="MarcoEstrellaProcess" />
+            <receiver android:name="com.traslada.prestadores.plugin.PlugInControlReceiver">
                 <intent-filter>
                     <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                     <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
@@ -45,16 +45,16 @@
             </receiver>
         </config-file>
 
-        <source-file src="src/android/java/CordovaPluginJavaConnection.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/MyApplication.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/AppDatabase.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/AppPreferences.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/MyForegroundService.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/PlugInControlReceiver.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/RetrofitCreator.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/TrackingPositionModel.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/TrasladaLogService.java" target-dir="src/com/prueba/conex" />
-        <source-file src="src/android/java/TrasladaTrackerService.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/CordovaPluginMobileSuppliers.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/MyApplication.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/AppDatabase.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/AppPreferences.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/MyForegroundService.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/PlugInControlReceiver.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/RetrofitCreator.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/TrackingPositionModel.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/TrasladaLogService.java" target-dir="src/com/traslada/prestadores/plugin" />
+        <source-file src="src/android/java/TrasladaTrackerService.java" target-dir="src/com/traslada/prestadores/plugin" />
 
         <resource-file src="src/android/res/drawable/ic_running.xml" target="res/drawable/ic_running.xml" />
     </platform>

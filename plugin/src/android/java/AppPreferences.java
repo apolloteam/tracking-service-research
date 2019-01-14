@@ -1,4 +1,4 @@
-package com.prueba.conex;
+package com.traslada.prestadores.plugin;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,21 +9,21 @@ public class AppPreferences {
 
     private final String SP_NAME = "TRACKER_SP";
 
-    public static final String TRACKING_API_BASE_URL  = "trackingApiBaseUrl";
-    public static final String LOG_API_BASE_URL       = "logApiBaseUrl";
-    public static final String GPS_INTERVAL           = "gpsInterval";
-    public static final String SERVICE_RUNNING        = "serviceRunning";
-    public static final String HOLDER_ID              = "holderId";
-    public static final String ACTIVITY_ID            = "activityId";
-    public static final String OWNER_ID               = "ownerId";
-    public static final String HOLDER_STATUS          = "holderStatus";
-    public static final String ACTIVITY_STATUS        = "activityStatus";
-    public static final String LAST_POSITION_DATE     = "lastPositionDate";
-    public static final String LAST_POSITION          = "lastPosition";
+    public static final String TRACKING_API_BASE_URL = "trackingApiBaseUrl";
+    public static final String LOG_API_BASE_URL = "logApiBaseUrl";
+    public static final String GPS_INTERVAL = "gpsInterval";
+    public static final String SERVICE_RUNNING = "serviceRunning";
+    public static final String HOLDER_ID = "holderId";
+    public static final String ACTIVITY_ID = "activityId";
+    public static final String OWNER_ID = "ownerId";
+    public static final String HOLDER_STATUS = "holderStatus";
+    public static final String ACTIVITY_STATUS = "activityStatus";
+    public static final String LAST_POSITION_DATE = "lastPositionDate";
+    public static final String LAST_POSITION = "lastPosition";
 
     private final String EMPTY = "";
 
-    public AppPreferences(Context context){
+    public AppPreferences(Context context) {
 
         this.sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
     }
@@ -53,7 +53,7 @@ public class AppPreferences {
     }
 
     public void setServiceRunning(boolean isRunning) {
-        this.sp.edit().putInt(SERVICE_RUNNING, isRunning ? 1 : 0 ).apply();
+        this.sp.edit().putInt(SERVICE_RUNNING, isRunning ? 1 : 0).apply();
     }
 
     public Integer getServiceRunning() {

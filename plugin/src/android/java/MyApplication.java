@@ -1,4 +1,4 @@
-package com.prueba.conex;
+package com.traslada.prestadores.plugin;
 
 import android.app.Application;
 import android.app.NotificationChannel;
@@ -19,11 +19,12 @@ public class MyApplication extends Application {
         createNotificationChannel();
     }
 
-    private void createNotificationChannel(){
+    private void createNotificationChannel() {
 
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            NotificationChannel serviceChannel = new NotificationChannel(CHANNEL_ID, "My Service Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel serviceChannel = new NotificationChannel(CHANNEL_ID, "My Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT);
 
             NotificationManager notManager = getSystemService(NotificationManager.class);
 

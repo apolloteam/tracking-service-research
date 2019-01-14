@@ -1,4 +1,4 @@
-package com.prueba.conex;
+package com.traslada.prestadores.plugin;
 
 public class TrackingPositionModel {
 
@@ -14,11 +14,11 @@ public class TrackingPositionModel {
     private Float accuracy;
     private Float speed;
 
-    public TrackingPositionModel(){}
+    public TrackingPositionModel() {
+    }
 
-    public TrackingPositionModel(int id, String date, Integer holderId, Integer activityId,
-                                 Integer ownerId, Integer holderStatus, Integer activityStatus,
-                                 String lat, String lng, Float accuracy, Float speed) {
+    public TrackingPositionModel(int id, String date, Integer holderId, Integer activityId, Integer ownerId,
+            Integer holderStatus, Integer activityStatus, String lat, String lng, Float accuracy, Float speed) {
         this.id = id;
         this.date = date;
         this.holderId = holderId;

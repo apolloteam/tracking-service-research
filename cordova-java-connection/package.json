@@ -12,7 +12,8 @@
   "dependencies": {
     "bower-installer": "^1.3.6",
     "cordova-android": "^7.1.4",
-    "cordova-plugin-java-connection": ".\\..\\plugin",
+    "cordova-plugin-java-connection": "file:../plugin",
+    "cordova-plugin-mobile-suppliers": ".\\..\\plugin",
     "cordova-plugin-whitelist": "^1.3.3",
     "http-server": "^0.11.1",
     "reflect-metadata": "^0.1.10",
@@ -51,7 +52,8 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-java-connection": {}
+      "cordova-plugin-java-connection": {},
+      "cordova-plugin-mobile-suppliers": {}
     },
     "platforms": [
       "android"

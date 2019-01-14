@@ -1,4 +1,4 @@
-package com.prueba.conex;
+package com.traslada.prestadores.plugin;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,33 +14,33 @@ public class PlugInControlReceiver extends BroadcastReceiver {
 
     private Call<Void> retrofitCall;
 
-    @Override public void onReceive(final Context context, Intent intent) {
+    @Override
+    public void onReceive(final Context context, Intent intent) {
 
         String action = intent.getAction();
 
         String usbConnectionStatus = null;
 
-        if(action.equals(Intent.ACTION_POWER_CONNECTED)) {
+        if (action.equals(Intent.ACTION_POWER_CONNECTED)) {
 
             Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
 
             usbConnectionStatus = "usb_connected";
-        }
-        else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+        } else if (action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
 
             Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
 
             usbConnectionStatus = "usb_disconnected";
         }
 
-        if(usbConnectionStatus == null)
+        if (usbConnectionStatus == null)
             return;
 
         AppPreferences preferences = new AppPreferences(context);
 
         String logUrl = preferences.getLogApiBaseUrl();
 
-        if( logUrl.isEmpty() ){
+        if (logUrl.isEmpty()) {
             return;
         }
 
@@ -50,27 +50,32 @@ public class PlugInControlReceiver extends BroadcastReceiver {
 
         retrofitCall.enqueue(new Callback<Void>() {
 
-            @Override public void onResponse(Call<Void> call, Response<Void> response) {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
 
-                if(response.code() == 204){
-                    Toast.makeText(context, "El cambio de estado del USB connection fue registrado con exito.", Toast.LENGTH_SHORT).show();
+                if (response.code() == 204) {
+                    Toast.makeText(context, "El cambio de estado del USB connection fue registrado con exito.",
+                            Toast.LENGTH_SHORT).show();
                 }
 
-                Log.v("PlugInControlReceiver","code: "+response.code());
+                Log.v("PlugInControlReceiver", "code: " + response.code());
             }
 
-            @Override public void onFailure(Call<Void> call, Throwable t) {
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
 
                 t.printStackTrace();
-                Toast.makeText(context, "Ocurrio un error al registrar el cambio de estado del USB.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Ocurrio un error al registrar el cambio de estado del USB.",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    @Override protected void finalize() throws Throwable {
+    @Override
+    protected void finalize() throws Throwable {
         super.finalize();
 
-        if(retrofitCall!=null)
+        if (retrofitCall != null)
             retrofitCall.cancel();
     }
 }

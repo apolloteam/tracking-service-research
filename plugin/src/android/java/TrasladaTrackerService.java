@@ -1,4 +1,4 @@
-package com.prueba.conex;
+package com.traslada.prestadores.plugin;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

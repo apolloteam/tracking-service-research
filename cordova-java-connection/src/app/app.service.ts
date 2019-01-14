@@ -58,7 +58,7 @@ export class AppService {
 
         const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.startService(
+            this.$window.CordovaPluginMobileSuppliers.startService(
                 () => {
                     // Success.
                     this.$log.debug(`${methodName} (success)`);
@@ -88,7 +88,7 @@ export class AppService {
 
         const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.stopService(
+            this.$window.CordovaPluginMobileSuppliers.stopService(
                 () => {
                     // Success.
                     this.$log.debug(`${methodName} (success)`);
@@ -120,7 +120,7 @@ export class AppService {
 
         const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.initParameters(
+            this.$window.CordovaPluginMobileSuppliers.initParameters(
                 pluginParameters,
                 (response) => {
                     // Success.
@@ -152,7 +152,7 @@ export class AppService {
 
         const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.setParameters(
+            this.$window.CordovaPluginMobileSuppliers.setParameters(
                 pluginParameters,
                 (response) => {
                     // Success.
@@ -183,7 +183,7 @@ export class AppService {
 
         const deferred: angular.IDeferred<string> = this.$q.defer<string>();
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.getParameters(
+            this.$window.CordovaPluginMobileSuppliers.getParameters(
                 (response: string) => {
                     // Success.
                     this.$log.debug(`${methodName} (success) response %o`, response);
@@ -211,7 +211,7 @@ export class AppService {
         this.$log.debug(`${methodName}`);
         const deferred: angular.IDeferred<void> = this.$q.defer<void>();
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.getLogs(
+            this.$window.CordovaPluginMobileSuppliers.getLogs(
                 (resp) => {
                     this.$log.debug(`${methodName} (success)  resp: %o`, resp);
                     const data = JSON.parse(resp);
@@ -236,7 +236,7 @@ export class AppService {
         const deferred: angular.IDeferred<string[]> = this.$q.defer();
 
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.getTrackingPositionsByActivity(
+            this.$window.CordovaPluginMobileSuppliers.getTrackingPositionsByActivity(
                 activityId,
                 (resp) => {
                     this.$log.debug(`${methodName} (success)  resp: %o`, resp);
@@ -267,7 +267,7 @@ export class AppService {
         const deferred: angular.IDeferred<void> = this.$q.defer();
 
         if (this.isAvailable()) {
-            this.$window.CordovaPluginJavaConnection.deleteTrackingPositionsByActivity(
+            this.$window.CordovaPluginMobileSuppliers.deleteTrackingPositionsByActivity(
                 activityId,
                 (resp) => { // Success.
                     this.$log.debug(`${methodName} (success) response %o`, resp);
@@ -321,7 +321,7 @@ export class AppService {
      */
     private isAvailable(): boolean {
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const ret: boolean = angular.isDefined(this.$window.CordovaPluginJavaConnection) ? true : false;
+        const ret: boolean = angular.isDefined(this.$window.CordovaPluginMobileSuppliers) ? true : false;
         return ret;
     }
 
