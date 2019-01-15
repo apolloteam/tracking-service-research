@@ -13,7 +13,7 @@
   },
   "bundleDependencies": false,
   "deprecated": false,
-  "description": "Cordova-plugin-mobile-suppliers",
+  "description": "cordova-plugin-mobile-suppliers",
   "license": "ISC",
   "main": "cordova-plugin-mobile-suppliers.js",
   "name": "cordova-plugin-mobile-suppliers",

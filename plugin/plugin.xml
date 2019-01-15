@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         id="cordova-plugin-mobile-suppliers" version="0.0.1">
-    <name>Cordova Plugin Mobile Suppliers</name>
+    <name>CordovaPluginMobileSuppliers</name>
     <description>Cordova Plugin Mobile Suppliers</description>
     <license>Apache 2.0</license>
     <keywords>cordova,device</keywords>
+    
 
     <platform name="android">
         <framework src="com.google.code.gson:gson:2.8.4" />
@@ -18,23 +19,20 @@
         <js-module src="www/cordova-plugin-mobile-suppliers.js" name="CordovaPluginMobileSuppliers">
             <clobbers target="CordovaPluginMobileSuppliers" />
         </js-module>
-
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="CordovaPluginMobileSuppliers">
                 <param name="android-package" value="com.traslada.prestadores.plugin.CordovaPluginMobileSuppliers"/>
             </feature>
         </config-file>
-
+            
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
         </config-file>
-        
         <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
             <application android:name="com.traslada.prestadores.plugin.MyApplication"/>
         </edit-config>
-
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <service android:name="com.traslada.prestadores.plugin.MyForegroundService"android:label="TrackingProcess" />
             <receiver android:name="com.traslada.prestadores.plugin.PlugInControlReceiver">
