@@ -1,25 +1,24 @@
 {
-  "_id": "cordova-plugin-java-connection",
+  "_id": "cordova-plugin-mobile-suppliers",
   "_inBundle": false,
   "_integrity": "",
-  "_location": "/cordova-plugin-java-connection",
+  "_location": "/cordova-plugin-mobile-suppliers",
   "_phantomChildren": {},
   "_requiredBy": [
     "#USER",
     "/"
   ],
   "author": {
-    "name": "coucoume"
+    "name": "ApolloTeam"
   },
   "bundleDependencies": false,
   "deprecated": false,
-  "description": "Cordova-plugin-java-connection",
+  "description": "Cordova-plugin-mobile-suppliers",
   "license": "ISC",
-  "main": "Cordova-plugin-java-connection.js",
-  "name": "cordova-plugin-java-connection",
-
+  "main": "cordova-plugin-mobile-suppliers.js",
+  "name": "cordova-plugin-mobile-suppliers",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "0.6.19"
+  "version": "1.0.0"
 }

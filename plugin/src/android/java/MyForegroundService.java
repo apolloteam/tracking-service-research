@@ -29,6 +29,9 @@ import com.traslada.cordovaPluginJavaConnection.MainActivity;
 
 public class MyForegroundService extends Service {
 
+    private String TITLE_SERVICE = "Servicio de trackeo";
+    private String SUBTITLE_SERVICE = "Trackeando posición";
+
     private Notification notification;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -144,9 +147,9 @@ public class MyForegroundService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        notification = new NotificationCompat.Builder(this, MyApplication.CHANNEL_ID).setContentTitle("Marco Estrella")
-                .setContentText("Demo Permanent Service").setSmallIcon(R.drawable.ic_running)
-                .setContentIntent(pendingIntent).build();
+        notification = new NotificationCompat.Builder(this, MyApplication.CHANNEL_ID).setContentTitle(TITLE_SERVICE)
+                .setContentText(SUBTITLE_SERVICE).setSmallIcon(R.drawable.ic_running).setContentIntent(pendingIntent)
+                .build();
 
         startForeground(1, notification);
 

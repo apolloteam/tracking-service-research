@@ -1,5 +1,4 @@
 @ECHO OFF
-@ECHO OFF
 REM cordova plugin ls | find "Cordova-plugin-mobile-suplliers" /c>nul 2>&1
 REM IF [%Errorlevel%] EQU [0] (
 REM     CALL cordova plugin rm cordova-plugin-mobile-suplliers --save
@@ -19,13 +18,13 @@ IF EXIST .\plugins\Cordova-plugin-mobile-suppliers\NUL (
     CALL RD /S /Q .\plugins\cordova-plugin-mobile-suppliers
 )
 
-REM npm ls -ll | find "Cordova-plugin-mobile-suplliers" /c>nul 2>&1
-REM IF [%Errorlevel%] EQU [0] (
-REM     CALL npm uninstall cordova-plugin-mobile-suplliers -P
-REM )
+npm ls -ll | find "Cordova-plugin-mobile-suplliers" /c>nul 2>&1
+IF [%Errorlevel%] EQU [0] (
+    CALL npm uninstall cordova-plugin-mobile-suplliers -P
+)
 
 CALL cordova platform rm android --save
-REM CALL cordova plugin add .\..\plugin --save
+CALL cordova plugin add .\..\plugin --save
 CALL npm i cordova-android apolloteam/angular-ts-decorators --save
 CALL gulp
 CALL cordova platform add android --save

@@ -36,7 +36,7 @@
         </edit-config>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <service android:name="com.traslada.prestadores.plugin.MyForegroundService"android:label="MarcoEstrellaProcess" />
+            <service android:name="com.traslada.prestadores.plugin.MyForegroundService"android:label="TrackingProcess" />
             <receiver android:name="com.traslada.prestadores.plugin.PlugInControlReceiver">
                 <intent-filter>
                     <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
