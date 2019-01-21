@@ -155,10 +155,6 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
                     context.startService(serviceIntent);
 
-                    AppPreferences preferences = new AppPreferences(context);
-
-                    preferences.setServiceRunning(true);
-
                     sendResultSuccess(CordovaPluginJavaConnection.startServiceContext, "");
                 } catch (Exception ex) {
                     errorProcess(CordovaPluginJavaConnection.startServiceContext, ex);
@@ -177,9 +173,6 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     Intent serviceIntent = new Intent(context, MyForegroundService.class);
 
                     context.stopService(serviceIntent);
-
-                    AppPreferences preferences = new AppPreferences(context);
-                    preferences.setServiceRunning(false);
 
                     new AppDatabase(context).deleteTrackingPositions();
 
@@ -420,6 +413,19 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         });
     }
 
+    private int isServiceRunning(Context context, Class<?> serviceClass){
+        final ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        final List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+
+        for (ActivityManager.RunningServiceInfo runningServiceInfo : services) {
+            
+            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())){
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     /**
      * Obtiene los parametros establecidos en el plugin.
      * 
@@ -436,7 +442,7 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
                     String trackingApiBaseUrl = preferences.getTrackingApiBaseUrl();
                     String logApiBaseUrl = preferences.getLogApiBaseUrl();
                     Integer gpsInterval = preferences.getGspInterval();
-                    Integer serviceRunning = preferences.getServiceRunning();
+                    Integer serviceRunning = isServiceRunning(context, MyForegroundService.class);
                     Integer holderId = preferences.getHolderId();
                     Integer activityId = preferences.getActivityId();
                     Integer ownerId = preferences.getOwnerId();
