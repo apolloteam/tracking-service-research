@@ -9,6 +9,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import android.os.Build;
 
 public class PlugInControlReceiver extends BroadcastReceiver {
 
@@ -17,22 +18,35 @@ public class PlugInControlReceiver extends BroadcastReceiver {
     @Override public void onReceive(final Context context, Intent intent) {
 
         String action = intent.getAction();
-
+        Log.v("PlugInControlReceiver","action: "+action);
         String usbConnectionStatus = null;
 
-        if(action.equals(Intent.ACTION_POWER_CONNECTED)) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
-            Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
+            if(action.equals("android.hardware.usb.action.USB_STATE")) {
 
-            usbConnectionStatus = "usb_connected";
+                if(intent.getExtras().getBoolean("connected")){
+
+                    Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
+                    usbConnectionStatus = "usb_connected";
+                }else{
+
+                    Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
+                    usbConnectionStatus = "usb_disconnected";
+                }
+            }
+        } else {
+            if(action.equals(Intent.ACTION_POWER_CONNECTED)) {
+
+                Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
+                usbConnectionStatus = "usb_connected";
+            }
+            else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
+
+                Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
+                usbConnectionStatus = "usb_disconnected";
+            }
         }
-        else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
-
-            Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
-
-            usbConnectionStatus = "usb_disconnected";
-        }
-
         if(usbConnectionStatus == null)
             return;
 

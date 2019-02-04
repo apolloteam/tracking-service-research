@@ -41,6 +41,12 @@
                 <intent-filter>
                     <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
                     <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                    <action android:name="android.hardware.usb.action.USB_STATE" />
+                </intent-filter>
+            </receiver>
+            <receiver android:name="com.prueba.conex.GpsStatusReceiver">
+                <intent-filter>
+                    <action android:name="android.location.PROVIDERS_CHANGED" />
                 </intent-filter>
             </receiver>
         </config-file>
@@ -55,6 +61,7 @@
         <source-file src="src/android/java/TrackingPositionModel.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/TrasladaLogService.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/TrasladaTrackerService.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/GpsStatusReceiver.java" target-dir="src/com/prueba/conex" />
 
         <resource-file src="src/android/res/drawable/ic_running.xml" target="res/drawable/ic_running.xml" />
     </platform>

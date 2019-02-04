@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -28,6 +29,9 @@ import com.traslada.cordovaPluginJavaConnection.R;
 import com.traslada.cordovaPluginJavaConnection.MainActivity;
 
 public class MyForegroundService extends Service {
+
+    private static final String ACTION = "android.location.PROVIDERS_CHANGED";
+    private GpsStatusReceiver gpsStatusReceiver;
 
     private Notification notification;
 
@@ -110,10 +114,8 @@ public class MyForegroundService extends Service {
 
         @Override public void onLocationAvailability(LocationAvailability locationAvailability) {
             super.onLocationAvailability(locationAvailability);
-
-            Log.v("MyForegroundService", "locationAvailability: "+locationAvailability.isLocationAvailable());
-
-            sendGpsStatus(locationAvailability.isLocationAvailable());
+            //Log.v("MyForegroundService", "locationAvailability: "+locationAvailability.isLocationAvailable());
+            //sendGpsStatus(locationAvailability.isLocationAvailable());
         }
     };
 
@@ -122,6 +124,11 @@ public class MyForegroundService extends Service {
         super.onCreate();
 
         Log.v("MyForegroundService", "onCreate");
+
+        gpsStatusReceiver = new GpsStatusReceiver();
+        final IntentFilter theFilter = new IntentFilter();
+        theFilter.addAction(ACTION);
+        this.registerReceiver(this.gpsStatusReceiver, theFilter);
 
         preferences = new AppPreferences(this);
 
@@ -169,6 +176,10 @@ public class MyForegroundService extends Service {
 
         Log.v("Service", "onDestroy");
 
+        if(gpsStatusReceiver != null){
+            this.unregisterReceiver(this.gpsStatusReceiver);
+        }
+
         if(retrofitRegisterGpsStatusCall != null)
             retrofitRegisterGpsStatusCall.cancel();
 
@@ -210,38 +221,6 @@ public class MyForegroundService extends Service {
 
             @Override public void onFailure(Call<Void> call, Throwable t) {
                 t.printStackTrace();
-            }
-        });
-    }
-
-    private void sendGpsStatus(Boolean isLocationAvailable){
-
-        String gpsStatus = isLocationAvailable ? "gps_on" : "gps_off";
-
-        String logUrl = preferences.getLogApiBaseUrl();
-
-        if( logUrl.isEmpty() ){
-            return;
-        }
-
-        TrasladaLogService service = RetrofitCreator.getRetrofit(logUrl).create(TrasladaLogService.class);
-
-        retrofitRegisterGpsStatusCall = service.registerGpsStatus(1, gpsStatus);
-
-        retrofitRegisterGpsStatusCall.enqueue(new Callback<Void>() {
-
-            @Override public void onResponse(Call<Void> call, Response<Void> response) {
-
-                if(response.code() == 204){
-                    Toast.makeText(MyForegroundService.this, "El cambio de estado del GPS fue registrado con exito.", Toast.LENGTH_SHORT).show();
-                }
-
-                Log.v("MyForegroundService","code: "+response.code());
-            }
-
-            @Override public void onFailure(Call<Void> call, Throwable t) {
-                t.printStackTrace();
-                Toast.makeText(MyForegroundService.this, "Ocurrio un error al registrar el cambio de estado del GPS.", Toast.LENGTH_SHORT).show();
             }
         });
     }
