@@ -13,15 +13,20 @@ import retrofit2.Retrofit;
 
 public class GpsStatusReceiver extends BroadcastReceiver {
 
+    private static int gpsCount = 0;
+
     private Call<Void> retrofitCall;
 
-    @Override public void onReceive(Context context, Intent intent) {
+    @Override
+    public void onReceive(Context context, Intent intent) {
 
         if (intent.getAction().matches(LocationManager.PROVIDERS_CHANGED_ACTION)) {
 
-            final LocationManager manager = (LocationManager) context.getSystemService( Context.LOCATION_SERVICE );
+            final LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-            sendGpsStatus(context,manager.isProviderEnabled( LocationManager.GPS_PROVIDER));
+            gpsCount++;
+
+            sendGpsStatus(context, manager.isProviderEnabled(LocationManager.GPS_PROVIDER));
         }
     }
 
@@ -33,13 +38,11 @@ public class GpsStatusReceiver extends BroadcastReceiver {
 
         String logUrl = preferences.getLogApiBaseUrl();
 
-        if( logUrl.isEmpty() ){
+        if (logUrl.isEmpty()) {
             return;
         }
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(logUrl)
-                .build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(logUrl).build();
 
         TrasladaLogService service = retrofit.create(TrasladaLogService.class);
 
@@ -47,18 +50,22 @@ public class GpsStatusReceiver extends BroadcastReceiver {
 
         retrofitCall.enqueue(new Callback<Void>() {
 
-            @Override public void onResponse(Call<Void> call, Response<Void> response) {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
 
-                if(response.code() == 204){
-                    Toast.makeText(context, "El cambio de estado del GPS fue registrado con exito.", Toast.LENGTH_SHORT).show();
+                if (response.code() == 204) {
+                    Toast.makeText(context, "El cambio de estado del GPS fue registrado con exito." + gpsCount,
+                            Toast.LENGTH_SHORT).show();
                 }
 
-                Log.v("MyForegroundService","code: "+response.code());
+                Log.v("MyForegroundService", "code: " + response.code());
             }
 
-            @Override public void onFailure(Call<Void> call, Throwable t) {
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(context, "Ocurrio un error al registrar el cambio de estado del GPS.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Ocurrio un error al registrar el cambio de estado del GPS.",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
