@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 import retrofit2.Call;
 import retrofit2.Callback;
+import java.util.Date;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import android.os.Build;
@@ -14,45 +15,52 @@ import android.os.Build;
 public class PlugInControlReceiver extends BroadcastReceiver {
 
     private Call<Void> retrofitCall;
+    private int counter = 1;
+    private AppPreferences appPreferences;
 
     @Override public void onReceive(final Context context, Intent intent) {
-
+        Log.v("PlugIn:::","onReceive()");
         String action = intent.getAction();
         Log.v("PlugInControlReceiver","action: "+action);
         String usbConnectionStatus = null;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        appPreferences = new AppPreferences(context);
+        boolean isConnected = false;
 
-            if(action.equals("android.hardware.usb.action.USB_STATE")) {
+        if(action.equals(Intent.ACTION_POWER_CONNECTED)) {
 
-                if(intent.getExtras().getBoolean("connected")){
+            Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
+            usbConnectionStatus = "usb_connected";
+            isConnected = true;
 
-                    Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
-                    usbConnectionStatus = "usb_connected";
-                }else{
+        } else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
 
-                    Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
-                    usbConnectionStatus = "usb_disconnected";
-                }
-            }
-        } else {
-            if(action.equals(Intent.ACTION_POWER_CONNECTED)) {
-
-                Toast.makeText(context, "USB Connected", Toast.LENGTH_SHORT).show();
-                usbConnectionStatus = "usb_connected";
-            }
-            else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)) {
-
-                Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
-                usbConnectionStatus = "usb_disconnected";
-            }
+            Toast.makeText(context, "USB Disconnected", Toast.LENGTH_SHORT).show();
+            usbConnectionStatus = "usb_disconnected";
+            isConnected = false;
         }
+
         if(usbConnectionStatus == null)
             return;
 
-        AppPreferences preferences = new AppPreferences(context);
+        long currentUsbMillis = new Date().getTime();
 
-        String logUrl = preferences.getLogApiBaseUrl();
+        long lastUsbMillis = appPreferences.getUsbMillisecond();
+        boolean lastUsbStatus = appPreferences.getUsbLastValue();
+
+        if(lastUsbMillis != 0 && currentUsbMillis < lastUsbMillis+5000 && lastUsbStatus == isConnected) {
+            Log.v("PlugIn:::","onReceive() fue antes");
+
+            Toast.makeText(context, "fue antes", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        appPreferences.setUsbMillisecond(new Date().getTime());
+        appPreferences.setUsbLastValue(isConnected);
+
+        Toast.makeText(context, " si paso", Toast.LENGTH_SHORT).show();
+        Log.v("PlugIn:::","onReceive() si paso");
+
+        String logUrl = appPreferences.getLogApiBaseUrl();
 
         if( logUrl.isEmpty() ){
             return;
@@ -67,10 +75,11 @@ public class PlugInControlReceiver extends BroadcastReceiver {
             @Override public void onResponse(Call<Void> call, Response<Void> response) {
 
                 if(response.code() == 204){
-                    Toast.makeText(context, "El cambio de estado del USB connection fue registrado con exito.", Toast.LENGTH_SHORT).show();
+                    counter = counter + 1;
+                    Toast.makeText(context, "El cambio de estado del USB connection fue registrado con exito. "+counter, Toast.LENGTH_SHORT).show();
                 }
 
-                Log.v("PlugInControlReceiver","code: "+response.code());
+                Toast.makeText(context, "code: "+response.code(), Toast.LENGTH_SHORT).show();
             }
 
             @Override public void onFailure(Call<Void> call, Throwable t) {

@@ -31,7 +31,12 @@ import com.traslada.cordovaPluginJavaConnection.MainActivity;
 public class MyForegroundService extends Service {
 
     private static final String ACTION = "android.location.PROVIDERS_CHANGED";
+
+    private static final String ACTION_CONNECT_USB = "android.intent.action.ACTION_POWER_CONNECTED";
+    private static final String ACTION_DISCONNECT_USB = "android.intent.action.ACTION_POWER_DISCONNECTED";
+
     private GpsStatusReceiver gpsStatusReceiver;
+    private PlugInControlReceiver plugInControlReceiver;
 
     private Notification notification;
 
@@ -126,9 +131,16 @@ public class MyForegroundService extends Service {
         Log.v("MyForegroundService", "onCreate");
 
         gpsStatusReceiver = new GpsStatusReceiver();
+        plugInControlReceiver = new PlugInControlReceiver();
+
         final IntentFilter theFilter = new IntentFilter();
         theFilter.addAction(ACTION);
         this.registerReceiver(this.gpsStatusReceiver, theFilter);
+
+        final IntentFilter theFilterPluginUsb = new IntentFilter();
+        theFilterPluginUsb.addAction(ACTION_CONNECT_USB);
+        theFilterPluginUsb.addAction(ACTION_DISCONNECT_USB);
+        this.registerReceiver(this.plugInControlReceiver, theFilterPluginUsb);
 
         preferences = new AppPreferences(this);
 

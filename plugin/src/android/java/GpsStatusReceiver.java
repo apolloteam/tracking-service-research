@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.util.Log;
 import android.widget.Toast;
+import java.util.Date;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -13,21 +14,40 @@ import retrofit2.Retrofit;
 
 public class GpsStatusReceiver extends BroadcastReceiver {
 
+    private AppPreferences appPreferences;
     private Call<Void> retrofitCall;
+    private int counter = 0;
 
     @Override public void onReceive(Context context, Intent intent) {
+
+        appPreferences = new AppPreferences(context);
 
         if (intent.getAction().matches(LocationManager.PROVIDERS_CHANGED_ACTION)) {
 
             final LocationManager manager = (LocationManager) context.getSystemService( Context.LOCATION_SERVICE );
 
-            sendGpsStatus(context,manager.isProviderEnabled( LocationManager.GPS_PROVIDER));
+            Boolean isLocationAvailable = manager.isProviderEnabled( LocationManager.GPS_PROVIDER);
+            long currentGpsMillis = new Date().getTime();
+
+            long lastGpsMillis = appPreferences.getGpsMillisecond();
+            boolean lastGpsValue = appPreferences.getGpsLastValue();
+
+            if(lastGpsMillis != 0 && currentGpsMillis < lastGpsMillis+5000 && lastGpsValue == isLocationAvailable) {
+                Log.v("GPS:::","onReceive() fue antes");
+                return;
+            }
+
+            appPreferences.setGpsLastValue(isLocationAvailable);
+            appPreferences.setGpsMillisecond(new Date().getTime());
+            Log.v("GPS:::","onReceive() si paso");
+
+            sendGpsStatus(context, isLocationAvailable);
         }
     }
 
     private void sendGpsStatus(final Context context, Boolean isLocationAvailable) {
 
-        String gpsStatus = isLocationAvailable ? "gps_on" : "gps_off";
+        final String gpsStatus = isLocationAvailable ? "gps_on" : "gps_off";
 
         AppPreferences preferences = new AppPreferences(context);
 
@@ -50,7 +70,9 @@ public class GpsStatusReceiver extends BroadcastReceiver {
             @Override public void onResponse(Call<Void> call, Response<Void> response) {
 
                 if(response.code() == 204){
-                    Toast.makeText(context, "El cambio de estado del GPS fue registrado con exito.", Toast.LENGTH_SHORT).show();
+
+                    counter = counter + 1;
+                    Toast.makeText(context, "new GPS status = "+gpsStatus+" counter: "+counter, Toast.LENGTH_SHORT).show();
                 }
 
                 Log.v("MyForegroundService","code: "+response.code());
