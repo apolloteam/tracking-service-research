@@ -191,6 +191,10 @@ public class MyForegroundService extends Service {
         if(gpsStatusReceiver != null){
             this.unregisterReceiver(this.gpsStatusReceiver);
         }
+		
+		if(plugInControlReceiver != null){
+            this.unregisterReceiver(this.plugInControlReceiver);
+        }
 
         if(retrofitRegisterGpsStatusCall != null)
             retrofitRegisterGpsStatusCall.cancel();
