@@ -413,13 +413,13 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         });
     }
 
-    private int isServiceRunning(Context context, Class<?> serviceClass){
-        final ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+    private int isServiceRunning(Context context, Class<?> serviceClass) {
+        final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         final List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
 
         for (ActivityManager.RunningServiceInfo runningServiceInfo : services) {
-            
-            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())){
+
+            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())) {
                 return 1;
             }
         }

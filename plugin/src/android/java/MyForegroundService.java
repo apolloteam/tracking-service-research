@@ -48,23 +48,26 @@ public class MyForegroundService extends Service {
 
     private AppPreferences preferences;
 
+    private AudioPlayer audioPlayer;
+
     private LocationCallback locationCallback = new LocationCallback() {
 
-        @Override public void onLocationResult(LocationResult locationResult) {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
 
             if (locationResult == null) {
-                Log.v("MyForegroundService","location is null");
+                Log.v("MyForegroundService", "location is null");
                 return;
             }
 
             Location location = locationResult.getLastLocation();
 
             String dateString = dateFormat.format(new Date());
-            String lat = ""+location.getLatitude();
-            String lng = ""+location.getLongitude();
-            String accuracy = ""+location.getAccuracy();
-            String speed = ""+location.getSpeed();
+            String lat = "" + location.getLatitude();
+            String lng = "" + location.getLongitude();
+            String accuracy = "" + location.getAccuracy();
+            String speed = "" + location.getSpeed();
             Integer holderId = preferences.getHolderId();
             Integer activityId = preferences.getActivityId();
             Integer ownerId = preferences.getOwnerId();
@@ -73,13 +76,13 @@ public class MyForegroundService extends Service {
 
             // store on Shared Preferences
 
-            String lastPositionString = lat+"|"+lng+"|"+accuracy+"|"+speed;
+            String lastPositionString = lat + "|" + lng + "|" + accuracy + "|" + speed;
 
             preferences.setLastPositionDate(dateString);
             preferences.setLastPosition(lastPositionString);
 
             // store on DB
-            if(preferences.getActivityId() != 0){
+            if (preferences.getActivityId() != 0) {
 
                 TrackingPositionModel trackingPositionModel = new TrackingPositionModel();
                 trackingPositionModel.setDate(dateString);
@@ -98,37 +101,29 @@ public class MyForegroundService extends Service {
 
             // store on API
 
-            StringBuffer dataSb = new StringBuffer("\"")
-                    .append(dateString)
-                    .append("|")
-                    .append(holderId)
-                    .append("|")
-                    .append(activityId)
-                    .append("|")
-                    .append(ownerId)
-                    .append("|")
-                    .append(holderStatus)
-                    .append("|")
-                    .append(activityStatus)
-                    .append("|")
-                    .append(lastPositionString)
-                    .append("\"");
+            StringBuffer dataSb = new StringBuffer("\"").append(dateString).append("|").append(holderId).append("|")
+                    .append(activityId).append("|").append(ownerId).append("|").append(holderStatus).append("|")
+                    .append(activityStatus).append("|").append(lastPositionString).append("\"");
 
             sendTrackedPosition(dataSb.toString());
         }
 
-        @Override public void onLocationAvailability(LocationAvailability locationAvailability) {
+        @Override
+        public void onLocationAvailability(LocationAvailability locationAvailability) {
             super.onLocationAvailability(locationAvailability);
-            //Log.v("MyForegroundService", "locationAvailability: "+locationAvailability.isLocationAvailable());
-            //sendGpsStatus(locationAvailability.isLocationAvailable());
+            // Log.v("MyForegroundService", "locationAvailability:
+            // "+locationAvailability.isLocationAvailable());
+            // sendGpsStatus(locationAvailability.isLocationAvailable());
         }
     };
 
     @SuppressLint("MissingPermission")
-    @Override public void onCreate() {
+    @Override
+    public void onCreate() {
         super.onCreate();
 
         Log.v("MyForegroundService", "onCreate");
+        audioPlayer = new AudioPlayer();
 
         gpsStatusReceiver = new GpsStatusReceiver();
         plugInControlReceiver = new PlugInControlReceiver();
@@ -149,11 +144,11 @@ public class MyForegroundService extends Service {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         locationRequest = LocationRequest.create();
-        if(preferences.getGspInterval() > 0){
+        if (preferences.getGspInterval() > 0) {
 
-            locationRequest.setMaxWaitTime(preferences.getGspInterval()*1000);
-            locationRequest.setInterval(preferences.getGspInterval()*1000);
-            locationRequest.setFastestInterval((preferences.getGspInterval()-1)*1000);
+            locationRequest.setMaxWaitTime(preferences.getGspInterval() * 1000);
+            locationRequest.setInterval(preferences.getGspInterval() * 1000);
+            locationRequest.setFastestInterval((preferences.getGspInterval() - 1) * 1000);
         } else {
 
             locationRequest.setMaxWaitTime(0);
@@ -165,47 +160,48 @@ public class MyForegroundService extends Service {
         mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
-    @Override public int onStartCommand(Intent intent, int flags, int startId) {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v("Service", "onStartCommand");
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        notification = new NotificationCompat.Builder(this, MyApplication.CHANNEL_ID)
-                .setContentTitle("Marco Estrella")
-                .setContentText("Demo Permanent Service")
-                .setSmallIcon(R.drawable.ic_running)
-                .setContentIntent(pendingIntent)
-                .build();
+        notification = new NotificationCompat.Builder(this, MyApplication.CHANNEL_ID).setContentTitle("Marco Estrella")
+                .setContentText("Demo Permanent Service").setSmallIcon(R.drawable.ic_running)
+                .setContentIntent(pendingIntent).build();
 
         startForeground(1, notification);
 
         return START_STICKY;
     }
 
-    @Override public void onDestroy() {
+    @Override
+    public void onDestroy() {
         super.onDestroy();
 
         Log.v("Service", "onDestroy");
 
-        if(gpsStatusReceiver != null){
+        if (gpsStatusReceiver != null) {
             this.unregisterReceiver(this.gpsStatusReceiver);
         }
-		
-		if(plugInControlReceiver != null){
+
+        if (plugInControlReceiver != null) {
             this.unregisterReceiver(this.plugInControlReceiver);
         }
 
-        if(retrofitRegisterGpsStatusCall != null)
+        if (retrofitRegisterGpsStatusCall != null)
             retrofitRegisterGpsStatusCall.cancel();
 
-        if(retrofitTrackPositionCall != null)
+        if (retrofitTrackPositionCall != null)
             retrofitTrackPositionCall.cancel();
 
         mFusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
-    @Nullable @Override public IBinder onBind(Intent intent) {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
@@ -216,7 +212,7 @@ public class MyForegroundService extends Service {
 
         String trackingUrl = preferences.getTrackingApiBaseUrl();
 
-        if( trackingUrl.isEmpty() ){
+        if (trackingUrl.isEmpty()) {
             return;
         }
 
@@ -226,16 +222,20 @@ public class MyForegroundService extends Service {
 
         retrofitTrackPositionCall.enqueue(new Callback<Void>() {
 
-            @Override public void onResponse(Call<Void> call, Response<Void> response) {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
 
-                if(response.code() != 204){
-                    Toast.makeText(MyForegroundService.this, "Error al enviar la posicion al API.", Toast.LENGTH_SHORT).show();
+                if (response.code() != 204) {
+                    Toast.makeText(MyForegroundService.this, "Error al enviar la posicion al API.", Toast.LENGTH_SHORT)
+                            .show();
                 }
 
-                Log.v("MyForegroundService","code: "+response.code());
+                Log.v("MyForegroundService", "code: " + response.code());
+                audioPlayer.play(MyForegroundService.this, R.raw.quite_impressed);
             }
 
-            @Override public void onFailure(Call<Void> call, Throwable t) {
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 t.printStackTrace();
             }
         });

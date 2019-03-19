@@ -1,3 +1,9 @@
 {
-    "java.configuration.updateBuildConfiguration": "disabled"
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "files.autoSave": "off",
+  "terminal.integrated.shell.windows": "C:\\Windows\\Sysnative\\cmd.exe",
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "window.zoomLevel": 0,
+  "html.format.wrapAttributes": "force-aligned"
 }

@@ -42,6 +42,7 @@
         <source-file src="src/android/java/CordovaPluginJavaConnection.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/MyApplication.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/AppDatabase.java" target-dir="src/com/prueba/conex" />
+        <source-file src="src/android/java/AudioPlayer.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/AppPreferences.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/MyForegroundService.java" target-dir="src/com/prueba/conex" />
         <source-file src="src/android/java/PlugInControlReceiver.java" target-dir="src/com/prueba/conex" />
@@ -52,5 +53,6 @@
         <source-file src="src/android/java/GpsStatusReceiver.java" target-dir="src/com/prueba/conex" />
 
         <resource-file src="src/android/res/drawable/ic_running.xml" target="res/drawable/ic_running.xml" />
+        <resource-file src="src/android/res/raw/quite_impressed.mp3" target="res/raw/quite_impressed.mp3" />
     </platform>
 </plugin>
