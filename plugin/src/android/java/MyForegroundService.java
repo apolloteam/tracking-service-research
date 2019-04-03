@@ -27,6 +27,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import com.traslada.cordovaPluginJavaConnection.R;
 import com.traslada.cordovaPluginJavaConnection.MainActivity;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.content.Context;
 
 public class MyForegroundService extends Service {
 
@@ -232,6 +236,7 @@ public class MyForegroundService extends Service {
 
                 Log.v("MyForegroundService", "code: " + response.code());
                 audioPlayer.play(MyForegroundService.this, R.raw.quite_impressed);
+                vibrate();
             }
 
             @Override
@@ -239,5 +244,19 @@ public class MyForegroundService extends Service {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void vibrate(){
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        if(v == null)
+            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(1000);
+        }
     }
 }

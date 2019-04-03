@@ -29,6 +29,7 @@
             <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.VIBRATE"/>
         </config-file>
         
         <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
