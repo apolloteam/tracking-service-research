@@ -21,6 +21,10 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 
 /**
  * Main plugin class.
@@ -146,6 +150,13 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
 
     private void startMyForegroundService(Context context) {
 
+        // mantener prendido la pantalla
+        this.cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                cordova.getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        });
+
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
 
@@ -164,6 +175,13 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
     }
 
     private void stopMyForegroundService(Context context) {
+
+        // apagar la pantalla
+        this.cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                cordova.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        });
 
         this.cordova.getThreadPool().execute(new Runnable() {
             public void run() {
@@ -413,13 +431,13 @@ public class CordovaPluginJavaConnection extends CordovaPlugin {
         });
     }
 
-    private int isServiceRunning(Context context, Class<?> serviceClass){
-        final ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+    private int isServiceRunning(Context context, Class<?> serviceClass) {
+        final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         final List<ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
 
         for (ActivityManager.RunningServiceInfo runningServiceInfo : services) {
-            
-            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())){
+
+            if (runningServiceInfo.service.getClassName().equals(serviceClass.getName())) {
                 return 1;
             }
         }
