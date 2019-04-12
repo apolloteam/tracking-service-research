@@ -54,6 +54,8 @@ public class MyForegroundService extends Service {
 
     private AudioPlayer audioPlayer;
 
+    private Thread loggerThread;
+    private LogTask logTask;
     private LocationCallback locationCallback = new LocationCallback() {
 
         @Override
@@ -127,6 +129,9 @@ public class MyForegroundService extends Service {
         super.onCreate();
 
         Log.v("MyForegroundService", "onCreate");
+        logTask = new LogTask();
+        loggerThread = new Thread(logTask);
+        loggerThread.start();
         audioPlayer = new AudioPlayer();
 
         gpsStatusReceiver = new GpsStatusReceiver();
@@ -200,6 +205,10 @@ public class MyForegroundService extends Service {
         if (retrofitTrackPositionCall != null)
             retrofitTrackPositionCall.cancel();
 
+        if (loggerThread != null) {
+            logTask.doStop();
+        }
+
         mFusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
@@ -246,17 +255,50 @@ public class MyForegroundService extends Service {
         });
     }
 
-    private void vibrate(){
+    private void vibrate() {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        if(v == null)
+        if (v == null)
             return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            //deprecated in API 26
+            // deprecated in API 26
             v.vibrate(1000);
         }
+    }
+}
+
+class LogTask implements Runnable {
+
+    private boolean doStop = false;
+
+    public synchronized void doStop() {
+        this.doStop = true;
+    }
+
+    private synchronized boolean keepRunning() {
+        return this.doStop == false;
+    }
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @Override
+    public void run() {
+
+        while (keepRunning()) {
+            try {
+                hacerTarea();
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void hacerTarea() {
+
+        Log.v("LogTask", "Tic " + dateFormat.format(new Date()));
     }
 }
